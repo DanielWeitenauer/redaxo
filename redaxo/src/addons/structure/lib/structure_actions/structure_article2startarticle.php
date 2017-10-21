@@ -2,7 +2,7 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article2Startarticle extends rex_fragment
+class rex_structure_article2startarticle extends rex_fragment
 {
     /**
      * @return string
@@ -22,6 +22,23 @@ class rex_structure_article2Startarticle extends rex_fragment
             'article_id' => $this->edit_id,
         ]);
 
-        return '<a class="btn btn-default" href="'.$this->context->getUrl($url_params).'" data-confirm="'.rex_i18n::msg('content_tostartarticle').'?" title="'.rex_i18n::msg('content_tostartarticle').'"><i class="rex-icon rex-icon-sitestartarticle"></i></a>';
+        $button_params = [
+            'button' => [
+                'hidden_label' => rex_i18n::msg('content_tostartarticle'),
+                'icon' => 'startarticle',
+                'url' => $this->context->getUrl($url_params, false),
+                'attributes' => [
+                    'class' => [
+                        'btn-default',
+                    ],
+                    'title' => rex_i18n::msg('content_tostartarticle'),
+                    'data-confirm' => rex_i18n::msg('content_tostartarticle').'?',
+                ],
+            ]
+        ];
+
+        $this->setVar('buttons', $button_params);
+
+        return $this->parse('core/buttons/button.php');
     }
 }
