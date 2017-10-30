@@ -20,7 +20,6 @@ $article_id = rex_article::get($article_id) ? $article_id : 0;
 $clang = rex_clang::exists($clang) ? $clang : rex_clang::getStartId();
 
 // --------------------------------------------- Mountpoints
-
 $mountpoints = rex::getUser()->getComplexPerm('structure')->getMountpoints();
 if (count($mountpoints) == 1 && $category_id == 0) {
     // Nur ein Mointpoint -> Sprung in die Kategory
@@ -120,10 +119,7 @@ if (count($mountpoints) > 0 && $category_id == 0) {
     $KAT->setQuery('SELECT * FROM ' . rex::getTablePrefix() . 'article WHERE parent_id=' . $category_id . ' AND startarticle=1 AND clang_id=' . $clang . ' ORDER BY catpriority LIMIT ' . $catPager->getCursor() . ',' . $catPager->getRowsPerPage());
 }
 
-$echo = '';
-
 // --------------------- PRINT CATS/SUBCATS
-
 $structure_category_add = new rex_structure_category_add([
     'edit_id' => $category_id,
     'sql' => $KAT,
@@ -194,7 +190,7 @@ if ($KAT->getRows() > 0) {
                 ]
             ];
 
-            // EXTENSION POINT to manipulate the $category_actions array
+            // EXTENSION POINT to manipulate the $category_infos array
             $category_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_INFOS', $category_infos, $action_params));
 
             $fragment = new rex_fragment();
@@ -254,7 +250,7 @@ if ($KAT->getRows() > 0) {
 $fragment = new rex_fragment();
 $fragment->setVar('table_head', $table_head, false);
 $fragment->setVar('table_body', $table_body, false);
-$echo .= $fragment->parse('structure/page/table.php');
+$echo = $fragment->parse('structure/page/table.php');
 
 $fragment = new rex_fragment();
 $fragment->setVar('heading', rex_i18n::msg('structure_categories_caption', $cat_name), false);
@@ -264,11 +260,7 @@ echo $fragment->parse('core/page/section.php');
 /**
  * ARTIKEL LISTE
  */
-$echo = '';
-
-// --------------------- READ TEMPLATES
 if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('structure')->hasMountpoints())) {
-    // --------------------- ARTIKEL LIST
     // ---------- COUNT DATA
     $sql = rex_sql::factory();
     // $sql->setDebug();
@@ -372,7 +364,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             ],
         ];
 
-        // EXTENSION POINT to manipulate the article action array
+        // EXTENSION POINT to manipulate the $article_actions array
         $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_actions, $action_params));
 
         // Get article infos
@@ -388,7 +380,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             ],
         ];
 
-        // EXTENSION POINT to manipulate the article info array
+        // EXTENSION POINT to manipulate the $article_infos array
         $article_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_INFOS', $article_infos, $action_params));
 
         $fragment = new rex_fragment();
@@ -440,7 +432,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 $fragment = new rex_fragment();
 $fragment->setVar('table_head', $table_head, false);
 $fragment->setVar('table_body', $table_body, false);
-$echo .= $fragment->parse('structure/page/table.php');
+$echo = $fragment->parse('structure/page/table.php');
 
 $fragment = new rex_fragment();
 $fragment->setVar('heading', rex_i18n::msg('structure_articles_caption', $cat_name), false);
