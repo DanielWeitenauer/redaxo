@@ -295,23 +295,11 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
                 LIMIT ' . $artPager->getCursor() . ',' . $artPager->getRowsPerPage());
 
     // ----------- PRINT OUT THE ARTICLES
-    $structure_article_add = new rex_structure_article_add([
-        'edit_id' => $category_id,
-        'sql' => $sql,
-        'pager' => $artPager,
-        'clang' => $clang,
-        'context' => $context,
-        'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
-    ]);
-
-    // Header
-    $fragment = new rex_fragment();
-    $fragment->setVar('table_icon', $structure_article_add->get(), false);
-    $table_head = $fragment->parse('structure/page/table_article_row_head.php');
 
     $table_body = '';
 
     // --------------------- ARTIKEL LIST
+    $article_actions = [];
     for ($i = 0; $i < $sql->getRows(); ++$i) {
         // --------------------- ARTIKEL NORMAL VIEW | EDIT AND ENTER
 
@@ -325,18 +313,32 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
         ];
 
-        // Actions with dedicated rows
-        $structure_article_icon = new rex_structure_article_icon($action_params);
-        $structure_article_name = new rex_structure_article_name($action_params);
-
         // Get article actions
         $article_actions = [
-            [
+            'icon' => [
+                'article_icon' => new rex_structure_article_icon($action_params),
+            ],
+            'id' => [
+                'article_id' => new rex_structure_article_id($action_params),
+            ],
+            'article_name' => [
+                'article_name' => new rex_structure_article_name($action_params)
+            ],
+            'template' => [
+                'article_template' => new rex_structure_article_template($action_params),
+            ],
+            'date' => [
+                'article_create_date' => new rex_structure_article_create_date($action_params),
+            ],
+            'priority' => [
+                'article_priority' => new rex_structure_article_priority($action_params),
+            ],
+            'status' => [
                 'article_edit' => new rex_structure_article_edit($action_params),
                 'article_delete' => new rex_structure_article_delete($action_params),
                 'article_status' => new rex_structure_article_status($action_params),
             ],
-            [
+            'action' => [
                 'article2category' => new rex_structure_article2category($action_params),
                 'article2startarticle' => new rex_structure_article2startarticle($action_params),
                 'article_move' => new rex_structure_article_move($action_params),
@@ -347,66 +349,35 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         // EXTENSION POINT to manipulate the $article_actions array
         $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_actions, $action_params));
 
-        // Get article infos
-        $article_infos = [
-            [
-                'article_template' => new rex_structure_article_template($action_params),
-            ],
-            [
-                'article_create_date' => new rex_structure_article_create_date($action_params),
-            ],
-            [
-                'article_priority' => new rex_structure_article_priority($action_params),
-            ],
-        ];
-
-        // EXTENSION POINT to manipulate the $article_infos array
-        $article_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_INFOS', $article_infos, $action_params));
+        // Normalize array
+        array_walk ($article_actions, function(&$item) {
+            if (!is_array($item)) {
+                $item = [$item]; // (array) would transform the object
+            }
+        });
 
         $fragment = new rex_fragment();
         $fragment->setVar('table_classes', $sql->getValue('startarticle') == 1 ? ' rex-startarticle' : '');
-        $fragment->setVar('table_icon', $structure_article_icon->get(), false);
-        $fragment->setVar('table_id', $sql->getValue('id'));
-        $fragment->setVar('table_name', $structure_article_name->get(), false);
-
-        // Add article infos
-        $article_info_output = '';
-        foreach ($article_infos as $article_info_group) {
-            if (!is_array($article_info_group)) {
-                $article_info_group = [$article_info_group]; // (array) would transform the object
-            }
-            $article_info_output .= '<div class="btn-group">';
-            foreach ($article_info_group as $article_info) {
-                if ($article_info instanceof rex_fragment && method_exists($article_info, 'get')) {
-                    $article_info_output .= $article_info->get().PHP_EOL;
-                }
-            }
-            $article_info_output .= '</div>';
-        }
-        $fragment->setVar('table_infos', $article_info_output, false);
-
-        // Add article actions
-        // Each action must be an descendant of rex_fragment and implement the method get()
-        // to return an action trigger which is collected in this loop
-        $article_action_output = '';
-        foreach ($article_actions as $article_action_group) {
-            if (!is_array($article_action_group)) {
-                $article_action_group = [$article_action_group];
-            }
-            $article_action_output .= '<div class="btn-group">';
-            foreach ($article_action_group as $article_action) {
-                if ($article_action instanceof rex_fragment && method_exists($article_action, 'get')) {
-                    $article_action_output .= $article_action->get().PHP_EOL;
-                }
-            }
-            $article_action_output .= '</div>';
-        }
-        $fragment->setVar('table_action', $article_action_output, false);
-
+        $fragment->setVar('article_actions', $article_actions, false);
         $table_body .= $fragment->parse('structure/page/table_article_row_body.php');
 
         $sql->next();
     }
+
+    // Header
+    $structure_article_add = new rex_structure_article_add([
+        'edit_id' => $category_id,
+        'sql' => $sql,
+        'pager' => $artPager,
+        'clang' => $clang,
+        'context' => $context,
+        'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
+    ]);
+
+    $fragment = new rex_fragment();
+    $fragment->setVar('table_icon', $structure_article_add->get(), false);
+    $fragment->setVar('article_actions', $article_actions, false);
+    $table_head = $fragment->parse('structure/page/table_article_row_head.php');
 }
 
 $fragment = new rex_fragment();
