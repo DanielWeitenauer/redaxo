@@ -36,7 +36,8 @@ class rex_structure_article_edit extends rex_fragment
             return '';
         }
 
-        $category_id = rex_article::get($this->edit_id)->getCategoryId();
+        $article = rex_article::get($this->edit_id);
+        $category_id = $article->getCategoryId();
 
         $template_select = '';
         if (rex_addon::get('structure')->getPlugin('content')->isAvailable()) {
@@ -44,7 +45,7 @@ class rex_structure_article_edit extends rex_fragment
             $select->setName('template_id');
             $select->setSize(1);
             $select->setStyle('class="form-control"');
-            $select->setSelected($this->sql->getValue('template_id'));
+            $select->setSelected($article->getValue('template_id'));
 
             $template_select = '
                 <dl class="dl-horizontal text-left">
@@ -75,16 +76,16 @@ class rex_structure_article_edit extends rex_fragment
                             </dl>
                             <dl class="dl-horizontal text-left">
                                 <dt><label for="article-name">'.rex_i18n::msg('header_article_name').'</label></dt>
-                                <dd><input class="form-control" type="text" name="article-name" value="'.htmlspecialchars($this->sql->getValue('name')).'" autofocus /></dd>
+                                <dd><input class="form-control" type="text" name="article-name" value="'.htmlspecialchars($article->getName()).'" autofocus /></dd>
                             </dl>
                             '.$template_select.'
                             <dl class="dl-horizontal text-left">
                                 <dt>'.rex_i18n::msg('header_date').'</dt>
-                                <dd>'.rex_formatter::strftime($this->sql->getDateTimeValue('createdate'), 'date').'</dd>
+                                <dd>'.rex_formatter::strftime($article->getCreateDate(), 'date').'</dd>
                             </dl>
                             <dl class="dl-horizontal text-left">
                                 <dt><label for="article-position">'.rex_i18n::msg('header_priority').'</label></dt>
-                                <dd><input class="form-control" type="text" name="article-position" value="'.htmlspecialchars($this->sql->getValue('priority')).'" /></dd>
+                                <dd><input class="form-control" type="text" name="article-position" value="'.htmlspecialchars($article->getPriority()).'" /></dd>
                             </dl>
                         </div>
                         <div class="modal-footer">
