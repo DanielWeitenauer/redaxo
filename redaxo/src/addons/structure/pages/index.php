@@ -311,13 +311,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
     // --------------------- ARTIKEL LIST
     for ($i = 0; $i < $sql->getRows(); ++$i) {
-        if ($sql->getValue('id') == rex_article::getSiteStartArticleId()) {
-            $class = ' rex-icon-sitestartarticle';
-        } elseif ($sql->getValue('startarticle') == 1) {
-            $class = ' rex-icon-startarticle';
-        } else {
-            $class = ' rex-icon-article';
-        }
 
         $class_startarticle = '';
         if ($sql->getValue('startarticle') == 1) {
@@ -325,22 +318,10 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         }
 
         // --------------------- ARTIKEL NORMAL VIEW | EDIT AND ENTER
-        $article_icon = '<i class="rex-icon'.$class.'"></i>';
-        $article_title = htmlspecialchars($sql->getValue('name'));
-
-        if ($KATPERM) {
-            $edit_url = $context->getUrl([
-                'page' => 'content/edit',
-                'article_id' => $sql->getValue('id'),
-                'mode' => 'edit'
-            ]);
-
-            $article_icon = '<a href="'.$edit_url.'" title="'.$article_title.'">'.$article_icon.'</a>';
-            $article_title = '<a href="'.$edit_url.'">'.$article_title.'</a>';
-        }
 
         // These params are passed to the structure actions and infos
         $action_params = [
+            'category_permission' => $KATPERM,
             'edit_id' => $sql->getValue('id'),
             'sql' => $sql,
             'pager' => $artPager,
@@ -348,6 +329,10 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             'context' => $context,
             'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
         ];
+
+        // Actions with dedicated rows
+        $structure_article_icon = new rex_structure_article_icon($action_params);
+        $structure_article_name = new rex_structure_article_name($action_params);
 
         // Get article actions
         $article_actions = [
@@ -385,9 +370,9 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
         $fragment = new rex_fragment();
         $fragment->setVar('table_additional_classes', trim($class_startarticle));
-        $fragment->setVar('table_icon', $article_icon, false);
+        $fragment->setVar('table_icon', $structure_article_icon->get(), false);
         $fragment->setVar('table_id', $sql->getValue('id'));
-        $fragment->setVar('table_name', $article_title, false);
+        $fragment->setVar('table_name', $structure_article_name->get(), false);
 
         // Add article infos
         $article_info_output = '';
