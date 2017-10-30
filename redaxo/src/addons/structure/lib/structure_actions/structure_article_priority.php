@@ -9,6 +9,6 @@ class rex_structure_article_priority extends rex_fragment
      */
     public function get()
     {
-        return '<span class="btn" data-title="'.rex_i18n::msg('header_priority').'">'.htmlspecialchars($this->sql->getValue('priority')).'</span>';
+        return '<span data-title="'.rex_i18n::msg('header_priority').'">'.htmlspecialchars($this->sql->getValue('priority')).'</span>';
     }
 }

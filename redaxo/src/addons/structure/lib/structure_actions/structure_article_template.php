@@ -17,7 +17,7 @@ class rex_structure_article_template extends rex_fragment
             return '';
         }
 
-        return '<span class="btn" data-title="'.rex_i18n::msg('header_template').'">'.$templates[$template_id].'</span>';
+        return '<span data-title="'.rex_i18n::msg('header_template').'">'.$templates[$template_id].'</span>';
     }
 
     /**
