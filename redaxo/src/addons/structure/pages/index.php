@@ -143,7 +143,7 @@ if ($category_id != 0 && ($category = rex_category::get($category_id))) {
     $fragment->setVar('table_name', '<a href="'.$context->getUrl(['category_id' => $category->getParentId()]).'">..</a>', false);
     $fragment->setVar('table_priority', '&nbsp;', false);
     $fragment->setVar('table_action', '&nbsp;', false);
-    $table_body .= $fragment->parse('structure/page/table_row_body.php');
+    $table_body .= $fragment->parse('structure/page/table_category_row_body.php');
 }
 
 // --------------------- KATEGORIE LIST
