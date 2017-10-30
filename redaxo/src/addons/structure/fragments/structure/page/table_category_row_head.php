@@ -1,7 +1,7 @@
 <tr>
     <th class="rex-table-icon"><?=$this->table_icon;?></th>
-    <th class="rex-table-id"><?=rex_i18n::msg('header_id');?></th>
-    <th><?=rex_i18n::msg('header_category');?></th>
-    <th class="rex-table-infos"><?=rex_i18n::msg('header_infos');?></th>
-    <th class="rex-table-action"><?=rex_i18n::msg('header_status');?></th>
+    <?php foreach ($this->category_actions as $article_action_group_key => $article_action_group): ?>
+        <?php if ($article_action_group_key == 'icon') continue;?>
+        <th class="rex-table-<?=rex_string::normalize($article_action_group_key, '-');?>"><?=rex_i18n::msg('header_'.$article_action_group_key);?></th>
+    <?php endforeach;?>
 </tr>

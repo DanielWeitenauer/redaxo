@@ -119,7 +119,72 @@ if (count($mountpoints) > 0 && $category_id == 0) {
     $KAT->setQuery('SELECT * FROM ' . rex::getTablePrefix() . 'article WHERE parent_id=' . $category_id . ' AND startarticle=1 AND clang_id=' . $clang . ' ORDER BY catpriority LIMIT ' . $catPager->getCursor() . ',' . $catPager->getRowsPerPage());
 }
 
-// --------------------- PRINT CATS/SUBCATS
+// --------------------- KATEGORIE LIST
+
+$table_body = '';
+$category_actions = [];
+if ($KAT->getRows() > 0) {
+    for ($i = 0; $i < $KAT->getRows(); ++$i) {
+        $i_category_id = $KAT->getValue('id');
+
+        // Show a category
+        if ($KATPERM || rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($i_category_id)) {
+            if ($KATPERM) {
+                // These params are passed to the structure actions
+                $action_params = [
+                    'edit_id' => $i_category_id,
+                    'sql' => $KAT,
+                    'pager' => $catPager,
+                    'clang' => $clang,
+                    'context' => $context,
+                    'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
+                ];
+
+                $category_actions = [
+                    'icon' => [
+                        'category_icon' => new rex_structure_category_icon($action_params),
+                    ],
+                    'id' => [
+                        'category_id' => new rex_structure_category_id($action_params),
+                    ],
+                    'category' => [
+                        'category_name' => new rex_structure_category_name($action_params),
+                    ],
+                    'priority' => [
+                        'category_priority' => new rex_structure_category_priority($action_params),
+                    ],
+                    'status' => [
+                        'category_edit' => new rex_structure_category_edit($action_params),
+                        'category_delete' => new rex_structure_category_delete($action_params),
+                        'category_status' => new rex_structure_category_status($action_params),
+                    ],
+                    'action' => [
+                        'category2article' => new rex_structure_category2article($action_params),
+                        'category_move' => new rex_structure_category_move($action_params),
+                    ],
+                ];
+
+                // EXTENSION POINT to manipulate the $category_actions array
+                $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, $action_params));
+
+                // Normalize array
+                array_walk ($category_actions, function(&$item) {
+                    if (!is_array($item)) {
+                        $item = [$item]; // (array) would transform the object
+                    }
+                });
+            }
+
+            $fragment = new rex_fragment();
+            $fragment->setVar('category_actions', $category_actions, false);
+            $table_body .= $fragment->parse('structure/page/table_category_row_body.php');
+        }
+
+        $KAT->next();
+    }
+}
+
+// Header
 $structure_category_add = new rex_structure_category_add([
     'edit_id' => $category_id,
     'sql' => $KAT,
@@ -129,129 +194,26 @@ $structure_category_add = new rex_structure_category_add([
     'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
 ]);
 
-// Header
 $fragment = new rex_fragment();
 $fragment->setVar('table_icon', $structure_category_add->get(), false);
+$fragment->setVar('category_actions', $category_actions, false);
 $table_head = $fragment->parse('structure/page/table_category_row_head.php');
 
-$table_body = '';
 // Link to parent category
 if ($category_id != 0 && ($category = rex_category::get($category_id))) {
     $fragment = new rex_fragment();
-    $fragment->setVar('table_icon', '<i class="rex-icon rex-icon-open-category"></i>', false);
-    $fragment->setVar('table_id', '-');
-    $fragment->setVar('table_name', '<a href="'.$context->getUrl(['category_id' => $category->getParentId()]).'">..</a>', false);
-    $fragment->setVar('table_infos', '&nbsp;', false);
-    $fragment->setVar('table_action', '&nbsp;', false);
-    $table_body .= $fragment->parse('structure/page/table_category_row_body.php');
+    $fragment->setVar('parent_url', $context->getUrl(['category_id' => $category->getParentId()]));
+    $fragment->setVar('category_actions', $category_actions, false);
+    $table_body = $fragment->parse('structure/page/table_category_parent_row_body.php').$table_body;
 }
 
-// --------------------- KATEGORIE LIST
-if ($KAT->getRows() > 0) {
-    for ($i = 0; $i < $KAT->getRows(); ++$i) {
-        $i_category_id = $KAT->getValue('id');
-
-        $kat_link = $context->getUrl(['category_id' => $i_category_id]);
-
-        // Show a category
-        if ($KATPERM || rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($i_category_id)) {
-            // These params are passed to the structure actions
-            $action_params = [
-                'edit_id' => $i_category_id,
-                'sql' => $KAT,
-                'pager' => $catPager,
-                'clang' => $clang,
-                'context' => $context,
-                'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
-            ];
-
-            $category_actions = [];
-            if ($KATPERM) {
-                $category_actions = [
-                    [
-                        'category_edit' => new rex_structure_category_edit($action_params),
-                        'category_delete' => new rex_structure_category_delete($action_params),
-                        'category_status' => new rex_structure_category_status($action_params),
-                    ],
-                    [
-                        'category2article' => new rex_structure_category2article($action_params),
-                        'category_move' => new rex_structure_category_move($action_params),
-                    ],
-                ];
-
-                // EXTENSION POINT to manipulate the $category_actions array
-                $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, $action_params));
-            }
-
-            // Get article infos
-            $category_infos = [
-                [
-                    'category_priority' => new rex_structure_category_priority($action_params),
-                ]
-            ];
-
-            // EXTENSION POINT to manipulate the $category_infos array
-            $category_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_INFOS', $category_infos, $action_params));
-
-            $fragment = new rex_fragment();
-            $fragment->setVar('table_icon', '<a href="'.$kat_link.'" title="'.htmlspecialchars($KAT->getValue('catname')).'"><i class="rex-icon rex-icon-category"></i></a>', false);
-            $fragment->setVar('table_id', $i_category_id);
-            $fragment->setVar('table_name', '<a href="'.$kat_link.'">'.htmlspecialchars($KAT->getValue('catname')).'</a>', false);
-
-            // Add article infos
-            $category_info_output = '';
-            foreach ($category_infos as $category_info_group) {
-                if (!is_array($category_info_group)) {
-                    $category_info_group = [$category_info_group]; // (array) would transform the object
-                }
-                $category_info_output .= '<div class="btn-group">';
-                foreach ($category_info_group as $category_info) {
-                    if ($category_info instanceof rex_fragment && method_exists($category_info, 'get')) {
-                        $category_info_output .= $category_info->get().PHP_EOL;
-                    }
-                }
-                $category_info_output .= '</div>';
-            }
-            $fragment->setVar('table_infos', $category_info_output, false);
-
-            // Add category actions
-            // Each action must be an descendant of rex_fragment and implement the method get()
-            // to return an action trigger which is collected in this loop
-            $category_action_output = '';
-            foreach ($category_actions as $category_action_group) {
-                if (!is_array($category_action_group)) {
-                    $category_action_group = [$category_action_group];  // (array) would transform the object
-                }
-                $category_action_output .= '<div class="btn-group">';
-                foreach ($category_action_group as $category_action) {
-                    if ($category_action instanceof rex_fragment && method_exists($category_action, 'get')) {
-                        $category_action_output .= $category_action->get().PHP_EOL;
-                    }
-                }
-                $category_action_output .= '</div>';
-            }
-            $fragment->setVar('table_action', $category_action_output, false);
-
-            $table_body .= $fragment->parse('structure/page/table_category_row_body.php');
-        }
-
-        $KAT->next();
-    }
-} else {
-    $fragment = new rex_fragment();
-    $fragment->setVar('table_icon', '&nbsp;', false);
-    $fragment->setVar('table_id', '');
-    $fragment->setVar('table_name', '');
-    $fragment->setVar('table_infos', '');
-    $fragment->setVar('table_action', '');
-    $table_body .= $fragment->parse('structure/page/table_category_row_body.php');
-}
-
+// Table
 $fragment = new rex_fragment();
 $fragment->setVar('table_head', $table_head, false);
 $fragment->setVar('table_body', $table_body, false);
 $echo = $fragment->parse('structure/page/table.php');
 
+// Section
 $fragment = new rex_fragment();
 $fragment->setVar('heading', rex_i18n::msg('structure_categories_caption', $cat_name), false);
 $fragment->setVar('content', $echo, false);
