@@ -104,8 +104,6 @@ class rex_template_select extends rex_select
                     $this->templates[$t_id] = rex_i18n::translate($t_name, false);
                 }
             }
-
-            $this->templates[0] = rex_i18n::msg('template_default_name');
         }
 
         return $this->templates;
