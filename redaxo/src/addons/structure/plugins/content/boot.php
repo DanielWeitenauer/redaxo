@@ -12,12 +12,9 @@ rex_perm::register('moveSlice[]', null, rex_perm::OPTIONS);
 rex_complex_perm::register('modules', 'rex_module_perm');
 
 if (rex::isBackend()) {
-    /**
-     * Content sidebar
-     */
-    rex_extension::register('STRUCTURE_CONTENT_SIDEBAR', function(rex_extension_point $ep) {
-        $subject = $ep->getSubject();
+    rex_extension::register('STRUCTURE_CONTENT_SIDEBAR', function (rex_extension_point $ep) {
         $params = $ep->getParams();
+        $subject = $ep->getSubject();
 
         $action_params = [
             'edit_id' => $params['article_id'],
@@ -32,37 +29,46 @@ if (rex::isBackend()) {
             ]),
             'url_params' => [],
         ];
-
         $article_actions = [
-            'article_delete' => new rex_structure_article_delete($action_params),
-            'article_status' => new rex_structure_article_status($action_params),
-            'article2category' => new rex_structure_article2category($action_params),
-            'article2startarticle' => new rex_structure_article2Startarticle($action_params),
-            'article_move' => new rex_structure_article_move($action_params),
-            'article_copy' => new rex_structure_article_copy($action_params),
-
-            'content_copy' => new rex_structure_content_copy($action_params),
+            'meta' => [
+                'created_on' => new rex_structure_article_create_date($action_params),
+                'created_by' => new rex_structure_article_create_user($action_params),
+                'updated_on' => new rex_structure_article_update_date($action_params),
+                'updated_by' => new rex_structure_article_update_user($action_params),
+            ],
+            'status' => [
+                'article_delete' => new rex_structure_article_delete($action_params),
+                'article_status' => new rex_structure_article_status($action_params),
+            ],
+            'action' => [
+                'article2category' => new rex_structure_article2category($action_params),
+                'article2startarticle' => new rex_structure_article2Startarticle($action_params),
+                'article_move' => new rex_structure_article_move($action_params),
+                'article_copy' => new rex_structure_article_copy($action_params),
+            ],
+            'content_action' => [
+                'content_copy' => new rex_structure_content_copy($action_params),
+            ],
         ];
 
-        $panel = '<div class="btn-group">';
-        foreach ($article_actions as $article_action) {
-            if ($article_action instanceof rex_fragment && method_exists($article_action, 'get')) {
-                $panel .= $article_action->get();
-            }
-        }
-        $panel .= '</div>';
+        // EXTENSION POINT to manipulate the $article_actions array
+        $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_CONTENT_ARTICLE_ACTIONS', $article_actions, $action_params));
+
+        $fragment = new rex_fragment([
+            'article' => rex_article::get($params['article_id'], $params['clang']),
+            'article_status_types' => rex_article_service::statusTypes(),
+            'article_actions' => $article_actions,
+        ]);
+        $sidebar =  $fragment->parse('sidebar_actions.php');
 
         $fragment = new rex_fragment();
-        $fragment->setVar('title', '<i class="rex-icon rex-icon-info"></i> '.rex_i18n::msg('metafuncs'), false);
-        $fragment->setVar('body', $panel, false);
-        $fragment->setVar('article_id', $params['article_id'], false);
-        $fragment->setVar('clang', $params['clang'], false);
-        $fragment->setVar('ctype', $params['ctype'], false);
+        $fragment->setVar('title', '<i class="rex-icon rex-icon-info"></i> '.rex_i18n::msg('metadata'), false);
+        $fragment->setVar('body', $sidebar, false);
         $fragment->setVar('collapse', true);
         $fragment->setVar('collapsed', false);
-        $subject .= $fragment->parse('core/page/section.php');
+        $content = $fragment->parse('core/page/section.php');
 
-        return $subject;
+        return $content.$subject;
     });
 
     rex_extension::register('PAGE_CHECKED', function () {
