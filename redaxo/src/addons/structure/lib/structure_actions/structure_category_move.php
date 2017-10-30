@@ -9,6 +9,10 @@ class rex_structure_category_move extends rex_fragment
      */
     public function get()
     {
+        if (!$this->edit_id) {
+            return '';
+        }
+
         $article = rex_article::get($this->edit_id);
         $user = rex::getUser();
 

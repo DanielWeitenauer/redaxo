@@ -9,7 +9,7 @@ class rex_structure_category_delete extends rex_fragment
      */
     public function get()
     {
-        if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
+        if (!$this->edit_id || !rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
             return '';
         }
 

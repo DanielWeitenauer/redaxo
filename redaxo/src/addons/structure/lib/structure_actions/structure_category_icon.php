@@ -9,7 +9,11 @@ class rex_structure_category_icon extends rex_fragment
      */
     public function get()
     {
-        $category_name = $this->sql->getValue('catname');
+        if (!$this->edit_id) {
+            return '';
+        }
+
+        $category_name = rex_category::get($this->edit_id)->getName();
 
         $url_params = array_merge($this->url_params, [
             'category_id' => $this->edit_id,

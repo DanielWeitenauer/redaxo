@@ -9,12 +9,13 @@ class rex_structure_category_status extends rex_fragment
      */
     public function get()
     {
-        $article = rex_article::get($this->edit_id);
         $user = rex::getUser();
 
-        if (!$user->hasPerm('publishCategory[]') || !$user->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
+        if (!$this->edit_id || !$user->hasPerm('publishCategory[]') || !$user->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
             return '';
         }
+
+        $article = rex_article::get($this->edit_id);
 
         $status_index = (int) $article->isOnline();
         $states = rex_category_service::statusTypes();
