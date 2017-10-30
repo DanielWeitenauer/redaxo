@@ -15,11 +15,13 @@ foreach ($this->article_actions as $article_action_group_key => $article_action_
     }
     if ($is_horizontal) {
         $output_item = '<dl class="dl-horizontal text-left">'.$output_item.'</dl>';
-    } else {
+    } elseif ($output_item) {
         $output_item = '<div class="btn-group">'.$output_item.'</div>';
     }
 
-    $output_groups[$article_action_group_key] = $output_item;
+    if ($output_item) {
+        $output_groups[$article_action_group_key] = $output_item;
+    }
 }
 ?>
 <?php foreach ($output_groups as $ouput_key => $output_item): ?>
