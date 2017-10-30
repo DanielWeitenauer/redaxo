@@ -24,9 +24,9 @@ foreach ($this->article_actions as $article_action_group_key => $article_action_
     }
 }
 ?>
-<?php foreach ($output_groups as $ouput_key => $output_item): ?>
-    <dl class="rex-table-<?=rex_string::normalize($ouput_key, '-');?>">
-        <dt><?=rex_i18n::msg($ouput_key);?></dt>
+<?php foreach ($output_groups as $output_key => $output_item): ?>
+    <dl class="rex-table-<?=rex_string::normalize($output_key, '-');?>">
+        <dt><?=rex_i18n::msg($output_key);?></dt>
         <dd>
             <?=$output_item;?>
         </dd>
