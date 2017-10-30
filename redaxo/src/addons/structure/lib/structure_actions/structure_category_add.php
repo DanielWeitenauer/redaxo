@@ -13,16 +13,18 @@ class rex_structure_category_add extends rex_fragment
             return '';
         }
 
-        // Display form if necessary
-        if (rex_request('form_category_add', 'int', -1) == $this->edit_id) {
-            echo $this->getModal();
-        }
-
         $url_params = array_merge($this->url_params, [
             'form_category_add' => $this->edit_id,
         ]);
 
-        return '<a href="'.$this->context->getUrl($url_params).'" '.rex::getAccesskey(rex_i18n::msg('add_category'), 'add').'><i class="rex-icon rex-icon-add-category"></i></a>';
+        $return = '<a href="'.$this->context->getUrl($url_params).'" '.rex::getAccesskey(rex_i18n::msg('add_category'), 'add').'><i class="rex-icon rex-icon-add-category"></i></a>';
+
+        // Display form if necessary
+        if (rex_request('form_category_add', 'int', -1) == $this->edit_id) {
+            $return .= $this->getModal();
+        }
+
+        return $return;
     }
 
     /**

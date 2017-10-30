@@ -13,16 +13,18 @@ class rex_structure_article_edit extends rex_fragment
             return '';
         }
 
+        $url_params = array_merge($this->url_params, [
+            'form_article_edit' => $this->edit_id,
+        ]);
+
+        $return = '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default"><i class="rex-icon rex-icon-edit"></i></a>';
+
         // Display form if necessary
         if (rex_request('form_article_edit', 'int', -1) == $this->edit_id) {
             echo $this->getModal();
         }
 
-        $url_params = array_merge($this->url_params, [
-            'form_article_edit' => $this->edit_id,
-        ]);
-
-        return '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default"><i class="rex-icon rex-icon-edit"></i></a>';
+        return $return;
     }
 
     /**

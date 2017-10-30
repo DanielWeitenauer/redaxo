@@ -13,11 +13,6 @@ class rex_structure_article_copy extends rex_fragment
             return '';
         }
 
-        // Show form if necessary
-        if (rex_request('form_article_copy', 'int', -1) == $this->edit_id) {
-            echo $this->getModal();
-        }
-
         // Return button
         $url_params = array_merge($this->url_params, [
             'form_article_copy' => $this->edit_id,
@@ -39,6 +34,11 @@ class rex_structure_article_copy extends rex_fragment
         $this->setVar('buttons', $button_params, false);
 
         $return = $this->parse('core/buttons/button.php');
+
+        // Show form if necessary
+        if (rex_request('form_article_copy', 'int', -1) == $this->edit_id) {
+            $return .= $this->getModal();
+        }
 
         return $return;
     }

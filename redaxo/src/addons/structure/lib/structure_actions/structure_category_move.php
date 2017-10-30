@@ -16,16 +16,18 @@ class rex_structure_category_move extends rex_fragment
             return '';
         }
 
-        // Display form if necessary
-        if (rex_request('form_category_move', 'int', -1) == $this->edit_id) {
-            echo $this->getModal();
-        }
-
         $url_params = array_merge($this->url_params, [
             'form_category_move' => $this->edit_id,
         ]);
 
-        return '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default" title="'.rex_i18n::msg('content_submitmovecategory').'"><i class="rex-icon fa-cut"></i></a>';
+        $return = '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default" title="'.rex_i18n::msg('content_submitmovecategory').'"><i class="rex-icon fa-cut"></i></a>';
+
+        // Display form if necessary
+        if (rex_request('form_category_move', 'int', -1) == $this->edit_id) {
+            $return .= $this->getModal();
+        }
+
+        return $return;
     }
 
     /**

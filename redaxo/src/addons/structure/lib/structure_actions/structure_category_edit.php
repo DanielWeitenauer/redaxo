@@ -13,16 +13,18 @@ class rex_structure_category_edit extends rex_fragment
             return '';
         }
 
-        // Display form if necessary
-        if (rex_request('form_category_edit', 'int', -1) == $this->edit_id) {
-            echo $this->getModal();
-        }
-
         $url_params = array_merge($this->url_params, [
             'form_category_edit' => $this->edit_id,
         ]);
 
-        return '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default" title="'.rex_i18n::msg('change').'"><i class="rex-icon rex-icon-edit"></i></a>';
+        $return = '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default" title="'.rex_i18n::msg('change').'"><i class="rex-icon rex-icon-edit"></i></a>';
+
+        // Display form if necessary
+        if (rex_request('form_category_edit', 'int', -1) == $this->edit_id) {
+            $return .= $this->getModal();
+        }
+
+        return $return;
     }
 
     /**
