@@ -19,7 +19,10 @@ class rex_structure_service
         $category = rex_category::get($category_id);
 
         if ($category instanceof rex_category) {
-            $return = $category->getValue(self::ARTICLE_ORDER_VALUE);
+            $article_order = trim($category->getValue(self::ARTICLE_ORDER_VALUE));
+            if ($article_order) {
+                $return = $article_order;
+            }
         }
 
         return $return;

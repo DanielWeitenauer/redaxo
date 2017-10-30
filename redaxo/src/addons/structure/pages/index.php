@@ -282,22 +282,17 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     echo $artFragment->parse('core/navigations/pagination.php');
 
     // ---------- READ DATA
-    $article_order = rex_structure_service::getArticleOrder($category_id);
+    $article_order = rex_structure_service::getArticleOrder($category_id); //@todo must be escaped
 
     $sql->setQuery('SELECT *
                 FROM
                     ' . rex::getTablePrefix() . 'article
                 WHERE
-                    ((parent_id=:category_id AND startarticle=0) OR (id=:category_id AND startarticle=1))
-                    AND clang_id=:clang_id
+                    ((parent_id=' . $category_id . ' AND startarticle=0) OR (id=' . $category_id . ' AND startarticle=1))
+                    AND clang_id=' . $clang . '
                 ORDER BY
-                    :order_by
-                LIMIT 
-                    '.$artPager->getCursor().', '.$artPager->getRowsPerPage(), [
-        'category_id' => $category_id,
-        'clang_id' => $clang,
-        'order_by' => $article_order,
-    ]);
+                    '.$article_order.'
+                LIMIT ' . $artPager->getCursor() . ',' . $artPager->getRowsPerPage());
 
     // ----------- PRINT OUT THE ARTICLES
     $structure_article_add = new rex_structure_article_add([
