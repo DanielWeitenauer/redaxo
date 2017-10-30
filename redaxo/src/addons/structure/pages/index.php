@@ -343,13 +343,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             $article_title = '<a href="'.$edit_url.'">'.$article_title.'</a>';
         }
 
-        $tmpl_td = '';
-        if ($withTemplates) {
-            $tmpl = isset($TEMPLATE_NAME[$sql->getValue('template_id')]) ? $TEMPLATE_NAME[$sql->getValue('template_id')] : '';
-            $tmpl_td = '<span class="btn" data-title="' . rex_i18n::msg('header_template') . '">' . $tmpl . '</span>';
-        }
-
-        // These params are passed to the structure functions
+        // These params are passed to the structure actions and infos
         $action_params = [
             'edit_id' => $sql->getValue('id'),
             'sql' => $sql,
@@ -377,15 +371,18 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         // EXTENSION POINT to manipulate the article action array
         $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_actions, $action_params));
 
+        // Get article infos
         $article_infos = [
             [
-                $tmpl_td,
+                'article_template' => $withTemplates ? new rex_structure_article_template(array_merge($action_params, [
+                    'template_name' => isset($TEMPLATE_NAME) ? $TEMPLATE_NAME : [],
+                ])) : null,
             ],
             [
-                '<span class="btn" data-title="'.rex_i18n::msg('header_date').'">'.rex_formatter::strftime($sql->getDateTimeValue('createdate'), 'date').'</span>',
+                'article_create_date' => new rex_structure_article_create_date($action_params),
             ],
             [
-                '<span class="btn" data-title="'.rex_i18n::msg('header_priority').'">'.htmlspecialchars($sql->getValue('priority')).'</span>',
+                'article_priority' => new rex_structure_article_priority($action_params),
             ],
         ];
 
@@ -406,7 +403,9 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             }
             $article_info_output .= '<div class="btn-group">';
             foreach ($article_info_group as $article_info) {
-                $article_info_output .= $article_info.PHP_EOL;
+                if ($article_info instanceof rex_fragment && method_exists($article_info, 'get')) {
+                    $article_info_output .= $article_info->get().PHP_EOL;
+                }
             }
             $article_info_output .= '</div>';
         }
