@@ -243,27 +243,6 @@ $echo = '';
 
 // --------------------- READ TEMPLATES
 if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('structure')->hasMountpoints())) {
-    $withTemplates = $this->getPlugin('content')->isAvailable();
-    $tmpl_head = '';
-    if ($withTemplates) {
-        $template_select = new rex_select();
-        $template_select->setName('template_id');
-        $template_select->setSize(1);
-        $template_select->setStyle('class="form-control"');
-
-        $templates = rex_template::getTemplatesForCategory($category_id);
-        if (count($templates) > 0) {
-            foreach ($templates as $t_id => $t_name) {
-                $template_select->addOption(rex_i18n::translate($t_name, false), $t_id);
-                $TEMPLATE_NAME[$t_id] = rex_i18n::translate($t_name);
-            }
-        } else {
-            $template_select->addOption(rex_i18n::msg('option_no_template'), '0');
-        }
-        $TEMPLATE_NAME[0] = rex_i18n::msg('template_default_name');
-        $tmpl_head = '<th>' . rex_i18n::msg('header_template') . '</th>';
-    }
-
     // --------------------- ARTIKEL LIST
     // ---------- COUNT DATA
     $sql = rex_sql::factory();
@@ -374,9 +353,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         // Get article infos
         $article_infos = [
             [
-                'article_template' => $withTemplates ? new rex_structure_article_template(array_merge($action_params, [
-                    'template_name' => isset($TEMPLATE_NAME) ? $TEMPLATE_NAME : [],
-                ])) : null,
+                'article_template' => new rex_structure_article_template($action_params),
             ],
             [
                 'article_create_date' => new rex_structure_article_create_date($action_params),
