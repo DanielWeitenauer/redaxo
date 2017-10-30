@@ -363,7 +363,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         $article_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_INFOS', $article_infos, $action_params));
 
         $fragment = new rex_fragment();
-        $fragment->setVar('table_additional_classes', $sql->getValue('startarticle') == 1 ? ' rex-startarticle' : '');
+        $fragment->setVar('table_classes', $sql->getValue('startarticle') == 1 ? ' rex-startarticle' : '');
         $fragment->setVar('table_icon', $structure_article_icon->get(), false);
         $fragment->setVar('table_id', $sql->getValue('id'));
         $fragment->setVar('table_name', $structure_article_name->get(), false);
