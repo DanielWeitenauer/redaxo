@@ -63,7 +63,7 @@ class rex_structure_article_copy extends rex_fragment
                 'label' => rex_i18n::msg('content_submitcopyarticle'),
                 'attributes' => [
                     'class' => [
-                        'btn-save',
+                        'btn-send',
                     ],
                     'type' => 'submit',
                     'name' => 'submit',
