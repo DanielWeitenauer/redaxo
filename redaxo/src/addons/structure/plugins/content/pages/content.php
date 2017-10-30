@@ -366,21 +366,10 @@ if ($article->getRows() == 1) {
             if (!$subpage->hasHref()) {
                 $subpage->setHref($context->getUrl(['page' => $subpage->getFullKey()], false));
             }
-            // If the user has none of the content function permissions the page 'functions' will not be displayed
-            if (
-                $subpage->getKey() != 'functions' ||
-                $user->hasPerm('article2category[]') ||
-                $user->hasPerm('article2startarticle[]') ||
-                $user->hasPerm('copyArticle[]') ||
-                $user->hasPerm('moveArticle[]') ||
-                $user->hasPerm('moveCategory[]') ||
-                $user->hasPerm('copyContent[]')
-            ) {
-                if ($subpage->getItemAttr('left')) {
-                    $leftNav->addPage($subpage);
-                } else {
-                    $rightNav->addPage($subpage);
-                }
+            if ($subpage->getItemAttr('left')) {
+                $leftNav->addPage($subpage);
+            } else {
+                $rightNav->addPage($subpage);
             }
             $subpage->removeItemAttr('left');
         }
