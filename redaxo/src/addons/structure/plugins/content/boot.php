@@ -37,8 +37,9 @@ if (rex::isBackend()) {
                 'updated_by' => new rex_structure_article_update_user($action_params),
             ],
             'status' => [
-                'article_delete' => new rex_structure_article_delete($action_params),
-                'article_status' => new rex_structure_article_status($action_params),
+                'status_edit' => new rex_structure_article_edit($action_params),
+                'status_delete' => new rex_structure_article_delete($action_params),
+                'status_status' => new rex_structure_article_status($action_params),
             ],
             'action' => [
                 'article2category' => new rex_structure_article2category($action_params),
