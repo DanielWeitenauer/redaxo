@@ -187,11 +187,36 @@ if ($KAT->getRows() > 0) {
                 $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, $action_params));
             }
 
+            // Get article infos
+            $category_infos = [
+                [
+                    'category_priority' => new rex_structure_category_priority($action_params),
+                ]
+            ];
+
+            // EXTENSION POINT to manipulate the $category_actions array
+            $category_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_INFOS', $category_infos, $action_params));
+
             $fragment = new rex_fragment();
             $fragment->setVar('table_icon', '<a href="'.$kat_link.'" title="'.htmlspecialchars($KAT->getValue('catname')).'"><i class="rex-icon rex-icon-category"></i></a>', false);
             $fragment->setVar('table_id', $i_category_id);
             $fragment->setVar('table_name', '<a href="'.$kat_link.'">'.htmlspecialchars($KAT->getValue('catname')).'</a>', false);
-            $fragment->setVar('table_priority', htmlspecialchars($KAT->getValue('catpriority')));
+
+            // Add article infos
+            $category_info_output = '';
+            foreach ($category_infos as $category_info_group) {
+                if (!is_array($category_info_group)) {
+                    $category_info_group = [$category_info_group]; // (array) would transform the object
+                }
+                $category_info_output .= '<div class="btn-group">';
+                foreach ($category_info_group as $category_info) {
+                    if ($category_info instanceof rex_fragment && method_exists($category_info, 'get')) {
+                        $category_info_output .= $category_info->get().PHP_EOL;
+                    }
+                }
+                $category_info_output .= '</div>';
+            }
+            $fragment->setVar('table_infos', $category_info_output, false);
 
             // Add category actions
             // Each action must be an descendant of rex_fragment and implement the method get()
@@ -364,7 +389,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         ];
 
         // EXTENSION POINT to manipulate the article info array
-        $article_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_INFOS', $article_infos));
+        $article_infos = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_INFOS', $article_infos, $action_params));
 
         $fragment = new rex_fragment();
         $fragment->setVar('table_additional_classes', trim($class_startarticle));
