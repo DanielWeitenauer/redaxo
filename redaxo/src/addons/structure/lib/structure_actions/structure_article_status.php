@@ -12,7 +12,7 @@ class rex_structure_article_status extends rex_fragment
         $article = rex_article::get($this->edit_id);
         $user = rex::getUser();
 
-        $status_index = (int) $article->isOnline();
+        $status_index = $article->getValue('status');
         $states = rex_article_service::statusTypes();
         $status = $states[$status_index][0];
         $status_class = $states[$status_index][1];
