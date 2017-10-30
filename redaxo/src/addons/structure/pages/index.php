@@ -141,7 +141,7 @@ if ($category_id != 0 && ($category = rex_category::get($category_id))) {
     $fragment->setVar('table_icon', '<i class="rex-icon rex-icon-open-category"></i>', false);
     $fragment->setVar('table_id', '-');
     $fragment->setVar('table_name', '<a href="'.$context->getUrl(['category_id' => $category->getParentId()]).'">..</a>', false);
-    $fragment->setVar('table_priority', '&nbsp;', false);
+    $fragment->setVar('table_infos', '&nbsp;', false);
     $fragment->setVar('table_action', '&nbsp;', false);
     $table_body .= $fragment->parse('structure/page/table_category_row_body.php');
 }
@@ -242,7 +242,7 @@ if ($KAT->getRows() > 0) {
     $fragment->setVar('table_icon', '&nbsp;', false);
     $fragment->setVar('table_id', '');
     $fragment->setVar('table_name', '');
-    $fragment->setVar('table_priority', '');
+    $fragment->setVar('table_infos', '');
     $fragment->setVar('table_action', '');
     $table_body .= $fragment->parse('structure/page/table_category_row_body.php');
 }
