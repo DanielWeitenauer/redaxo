@@ -315,7 +315,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
         // These params are passed to the structure actions and infos
         $action_params = [
-            'category_permission' => $KATPERM,
             'edit_id' => $sql->getValue('id'),
             'sql' => $sql,
             'pager' => $artPager,
