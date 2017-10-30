@@ -7,11 +7,13 @@
 <tr class="rex-structure rex-structure-article<?=$this->table_classes;?>">
     <?php foreach ($this->article_actions as $article_action_group_key => $article_action_group): ?>
         <td class="rex-table-<?=rex_string::normalize($article_action_group_key, '-');?>" data-title="<?=rex_i18n::msg('header_'.$article_action_group_key);?>">
-            <?php foreach ($article_action_group as $article_action): ?>
-                <?php if ($article_action instanceof rex_fragment && method_exists($article_action, 'get')): ?>
-                    <?= $article_action->get(); ?>
-                <?php endif;?>
-            <?php endforeach; ?>
+            <div class="btn-group">
+                <?php foreach ($article_action_group as $article_action): ?>
+                    <?php if ($article_action instanceof rex_fragment && method_exists($article_action, 'get')): ?>
+                        <?= $article_action->get(); ?>
+                    <?php endif;?>
+                <?php endforeach; ?>
+            </div>
         </td>
     <?php endforeach; ?>
 </tr>
