@@ -127,53 +127,51 @@ $i = 0;
 do {
     $i_category_id = $KAT->getRows() ? $KAT->getValue('id') : 0;
 
-    if ($KATPERM) {
-        // These params are passed to the structure actions
-        $action_params = [
-            'edit_id' => $i_category_id,
-            'sql' => $KAT,
-            'pager' => $catPager,
-            'clang' => $clang,
-            'context' => $context,
-            'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
-        ];
+    // These params are passed to the structure actions
+    $action_params = [
+        'edit_id' => $i_category_id,
+        'sql' => $KAT,
+        'pager' => $catPager,
+        'clang' => $clang,
+        'context' => $context,
+        'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
+    ];
 
-        $category_actions = [
-            'icon' => [
-                'category_icon' => new rex_structure_category_icon($action_params),
-            ],
-            'id' => [
-                'category_id' => new rex_structure_category_id($action_params),
-            ],
-            'category' => [
-                'category_name' => new rex_structure_category_name($action_params),
-            ],
-            'priority' => [
-                'category_priority' => new rex_structure_category_priority($action_params),
-            ],
-            'status' => [
-                'category_edit' => new rex_structure_category_edit($action_params),
-                'category_delete' => new rex_structure_category_delete($action_params),
-                'category_status' => new rex_structure_category_status($action_params),
-            ],
-            'action' => [
-                'category2article' => new rex_structure_category2article($action_params),
-                'category_move' => new rex_structure_category_move($action_params),
-            ],
-        ];
+    $category_actions = [
+        'icon' => [
+            'category_icon' => new rex_structure_category_icon($action_params),
+        ],
+        'id' => [
+            'category_id' => new rex_structure_category_id($action_params),
+        ],
+        'category' => [
+            'category_name' => new rex_structure_category_name($action_params),
+        ],
+        'priority' => [
+            'category_priority' => new rex_structure_category_priority($action_params),
+        ],
+        'status' => [
+            'category_edit' => new rex_structure_category_edit($action_params),
+            'category_delete' => new rex_structure_category_delete($action_params),
+            'category_status' => new rex_structure_category_status($action_params),
+        ],
+        'action' => [
+            'category2article' => new rex_structure_category2article($action_params),
+            'category_move' => new rex_structure_category_move($action_params),
+        ],
+    ];
 
-        // EXTENSION POINT to manipulate the $category_actions array
-        $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, [
-            'action_params' => $action_params,
-        ]));
+    // EXTENSION POINT to manipulate the $category_actions array
+    $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, [
+        'action_params' => $action_params,
+    ]));
 
-        // Normalize array
-        array_walk ($category_actions, function(&$item) {
-            if (!is_array($item)) {
-                $item = [$item]; // (array) would transform the object
-            }
-        });
-    }
+    // Normalize array
+    array_walk ($category_actions, function(&$item) {
+        if (!is_array($item)) {
+            $item = [$item]; // (array) would transform the object
+        }
+    });
 
     // Link to parent category
     if ($i == 0 && $category_id != 0 && ($category = rex_category::get($category_id))) {
@@ -195,17 +193,34 @@ do {
 } while ($i < $KAT->getRows());
 
 // Header
-$structure_category_add = new rex_structure_category_add([
-    'edit_id' => $category_id,
-    'sql' => $KAT,
-    'pager' => $catPager,
-    'clang' => $clang,
-    'context' => $context,
-    'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
-]);
+$category_actions_header = [
+    'icon' => [
+        'category_icon' => $structure_category_add = new rex_structure_category_add([
+            'edit_id' => $category_id,
+            'sql' => $KAT,
+            'pager' => $catPager,
+            'clang' => $clang,
+            'context' => $context,
+            'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
+        ]),
+    ],
+];
+
+// EXTENSION POINT to manipulate the $category_actions array for the header
+$category_actions_header = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS_HEADER', $category_actions_header, [
+    'category_actions' => $category_actions,
+    'action_params' => $action_params,
+]));
+
+// Normalize array
+array_walk ($category_actions_header, function(&$item) {
+    if (!is_array($item)) {
+        $item = [$item]; // (array) would transform the object
+    }
+});
 
 $fragment = new rex_fragment();
-$fragment->setVar('table_icon', $structure_category_add->get(), false);
+$fragment->setVar('category_actions_header', $category_actions_header, false);
 $fragment->setVar('category_actions', $category_actions, false);
 $table_head = $fragment->parse('structure/page/table_category_row_head.php');
 
@@ -264,9 +279,8 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
     // --------------------- ARTIKEL LIST
     $article_actions = [];
-    for ($i = 0; $i < $sql->getRows(); ++$i) {
-        // --------------------- ARTIKEL NORMAL VIEW | EDIT AND ENTER
-
+    $i = 0;
+    do {
         // These params are passed to the structure actions and infos
         $action_params = [
             'edit_id' => $sql->getValue('id'),
@@ -327,21 +341,39 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         $fragment->setVar('article_actions', $article_actions, false);
         $table_body .= $fragment->parse('structure/page/table_article_row_body.php');
 
+        $i++;
         $sql->next();
-    }
+    } while ($i < $sql->getRows());
 
     // Header
-    $structure_article_add = new rex_structure_article_add([
-        'edit_id' => $category_id,
-        'sql' => $sql,
-        'pager' => $artPager,
-        'clang' => $clang,
-        'context' => $context,
-        'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
-    ]);
+    $article_actions_header = [
+        'icon' => [
+            'article_icon' => $structure_article_add = new rex_structure_article_add([
+                'edit_id' => $category_id,
+                'sql' => $sql,
+                'pager' => $artPager,
+                'clang' => $clang,
+                'context' => $context,
+                'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
+            ]),
+        ]
+    ];
+
+    // EXTENSION POINT to manipulate the $article_actions array for the header
+    $article_actions_header = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS_HEADER', $article_actions_header, [
+        'article_actions' => $article_actions,
+        'action_params' => $action_params,
+    ]));
+
+    // Normalize array
+    array_walk ($article_actions_header, function(&$item) {
+        if (!is_array($item)) {
+            $item = [$item]; // (array) would transform the object
+        }
+    });
 
     $fragment = new rex_fragment();
-    $fragment->setVar('table_icon', $structure_article_add->get(), false);
+    $fragment->setVar('article_actions_header', $article_actions_header, false);
     $fragment->setVar('article_actions', $article_actions, false);
     $table_head = $fragment->parse('structure/page/table_article_row_head.php');
 }
