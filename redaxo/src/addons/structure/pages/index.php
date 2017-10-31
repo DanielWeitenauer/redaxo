@@ -230,12 +230,15 @@ echo $fragment->parse('core/page/section.php');
 if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('structure')->hasMountpoints())) {
     $article_order = 'priority, name';
     // EXTENSION POINT to manipulate $article_order
-    $article_order = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_order));
-    $article_order = rex_structure_service::escape($article_order);
+    $article_order = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ORDER', $article_order, [
+        'category_id' => $category_id,
+        'clang_id' => $clang,
+    ]));
+    #$article_order = rex_structure_service::escape($article_order);
 
     // ---------- COUNT DATA
     $sql = rex_sql::factory();
-    $sql->setDebug();
+    //$sql->setDebug();
     $sql->setQuery('SELECT COUNT(*) as artCount
                 FROM
                     ' . rex::getTablePrefix() . 'article
