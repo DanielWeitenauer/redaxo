@@ -165,13 +165,7 @@ do {
     $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, [
         'action_params' => $action_params,
     ]));
-
-    // Normalize array
-    array_walk ($category_actions, function(&$item) {
-        if (!is_array($item)) {
-            $item = [$item]; // (array) would transform the object
-        }
-    });
+    $category_actions = rex_structure_service::normalizeArray($category_actions);
 
     // Link to parent category
     if ($i == 0 && $category_id != 0 && ($category = rex_category::get($category_id))) {
@@ -211,13 +205,7 @@ $category_actions_header = rex_extension::registerPoint(new rex_extension_point(
     'category_actions' => $category_actions,
     'action_params' => $action_params,
 ]));
-
-// Normalize array
-array_walk ($category_actions_header, function(&$item) {
-    if (!is_array($item)) {
-        $item = [$item]; // (array) would transform the object
-    }
-});
+$category_actions_header = rex_structure_service::normalizeArray($category_actions_header);
 
 $fragment = new rex_fragment();
 $fragment->setVar('category_actions_header', $category_actions_header, false);
@@ -332,13 +320,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_actions, [
             'action_params' => $action_params,
         ]));
-
-        // Normalize array
-        array_walk ($article_actions, function(&$item) {
-            if (!is_array($item)) {
-                $item = [$item]; // (array) would transform the object
-            }
-        });
+        $article_actions = rex_structure_service::normalizeArray($article_actions);
 
         $fragment = new rex_fragment();
         $fragment->setVar('table_classes', $sql->getValue('startarticle') == 1 ? ' rex-startarticle' : '');
@@ -368,13 +350,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         'article_actions' => $article_actions,
         'action_params' => $action_params,
     ]));
-
-    // Normalize array
-    array_walk ($article_actions_header, function(&$item) {
-        if (!is_array($item)) {
-            $item = [$item]; // (array) would transform the object
-        }
-    });
+    $article_actions_header = rex_structure_service::normalizeArray($article_actions_header);
 
     $fragment = new rex_fragment();
     $fragment->setVar('article_actions_header', $article_actions_header, false);

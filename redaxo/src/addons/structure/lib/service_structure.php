@@ -21,4 +21,17 @@ class rex_structure_service
 
         return implode(',',$return);
     }
+
+    /**
+     * @param array $array
+     * @return array
+     */
+    public static function normalizeArray(array $array)
+    {
+        return array_map(function(&$item) {
+            if (!is_array($item)) {
+                $item = [$item]; // (array) would transform the object
+            }
+        }, $array);
+    }
 }
