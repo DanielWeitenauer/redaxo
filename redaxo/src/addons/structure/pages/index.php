@@ -292,8 +292,10 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             'date' => [
                 'article_create_date' => new rex_structure_article_create_date($action_params),
             ],
-            'priority' => [
+            'prio' => [
+                'article_priority_dec' => new rex_structure_article_priority_dec($action_params),
                 'article_priority' => new rex_structure_article_priority($action_params),
+                'article_priority_inc' => new rex_structure_article_priority_inc($action_params),
             ],
             'status' => [
                 'article_edit' => new rex_structure_article_edit($action_params),
