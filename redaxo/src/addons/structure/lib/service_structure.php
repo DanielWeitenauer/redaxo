@@ -28,10 +28,11 @@ class rex_structure_service
      */
     public static function normalizeArray(array $array)
     {
-        return array_map(function(&$item) {
+        return array_map(function($item) {
             if (!is_array($item)) {
                 $item = [$item]; // (array) would transform the object
             }
+            return $item;
         }, $array);
     }
 }
