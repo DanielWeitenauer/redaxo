@@ -22,16 +22,23 @@ rex_extension::register('PAGE_STRUCTURE_ARTICLE_ORDER', function (rex_extension_
 rex_extension::register('PAGE_STRUCTURE_ARTICLE_ACTIONS', function (rex_extension_point $ep) {
     $article_actions = $ep->getSubject();
     $action_params = $ep->getParam('action_params');
+    $article = rex_article::get($action_params['edit_id']);
 
-    unset($article_actions['prio']);
-    unset($article_actions['template']);
-    unset($article_actions['status']['article_edit']);
-    unset($article_actions['action']['article2startarticle']);
-    unset($article_actions['action']['article2category']);
+    if ($article instanceof rex_article) {
+        $category = $article->getCategory();
 
-    $article_actions['create_date'] = $article_actions['date'];
-    unset($article_actions['date']);
-    $article_actions['update_date']['article_update_date'] = new rex_structure_article_update_date($action_params);
+        if ($category instanceof rex_category && $category->getValue('article_order')) {
+            unset($article_actions['prio']);
+            unset($article_actions['template']);
+            unset($article_actions['status']['article_edit']);
+            unset($article_actions['action']['article2startarticle']);
+            unset($article_actions['action']['article2category']);
+
+            $article_actions['create_date'] = $article_actions['date'];
+            unset($article_actions['date']);
+            $article_actions['update_date']['article_update_date'] = new rex_structure_article_update_date($action_params);
+        }
+    }
 
     return $article_actions;
 }, rex_extension::LATE);
