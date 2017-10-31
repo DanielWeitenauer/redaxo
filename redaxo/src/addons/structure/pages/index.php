@@ -187,23 +187,24 @@ do {
 } while ($i < $KAT->getRows());
 
 // Header
+$action_params_header = [
+    'edit_id' => $category_id,
+    'sql' => $KAT,
+    'pager' => $catPager,
+    'clang' => $clang,
+    'context' => $context,
+    'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
+];
 $category_actions_header = [
     'icon' => [
-        'category_icon' => new rex_structure_category_add([
-            'edit_id' => $category_id,
-            'sql' => $KAT,
-            'pager' => $catPager,
-            'clang' => $clang,
-            'context' => $context,
-            'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
-        ]),
+        'category_icon' => new rex_structure_category_add($action_params_header),
     ],
 ];
 
 // EXTENSION POINT to manipulate the $category_actions array for the header
 $category_actions_header = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS_HEADER', $category_actions_header, [
     'category_actions' => $category_actions,
-    'action_params' => $action_params,
+    'action_params_header' => $action_params_header,
 ]));
 $category_actions_header = rex_structure_service::normalizeArray($category_actions_header);
 
@@ -335,23 +336,24 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     } while ($i < $sql->getRows());
 
     // Header
+    $action_params_header = [
+        'edit_id' => $category_id,
+        'sql' => $sql,
+        'pager' => $artPager,
+        'clang' => $clang,
+        'context' => $context,
+        'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
+    ];
     $article_actions_header = [
         'icon' => [
-            'article_icon' => new rex_structure_article_add([
-                'edit_id' => $category_id,
-                'sql' => $sql,
-                'pager' => $artPager,
-                'clang' => $clang,
-                'context' => $context,
-                'url_params' => ['artstart' => $artstart, 'catstart' => $catstart],
-            ]),
+            'article_icon' => new rex_structure_article_add($action_params_header),
         ]
     ];
 
     // EXTENSION POINT to manipulate the $article_actions array for the header
     $article_actions_header = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS_HEADER', $article_actions_header, [
         'article_actions' => $article_actions,
-        'action_params' => $action_params,
+        'action_params_header' => $action_params_header,
     ]));
     $article_actions_header = rex_structure_service::normalizeArray($article_actions_header);
 
