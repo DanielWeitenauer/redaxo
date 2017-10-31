@@ -240,9 +240,14 @@ echo $fragment->parse('core/page/section.php');
  * ARTIKEL LISTE
  */
 if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('structure')->hasMountpoints())) {
+    $article_order = 'priority, name';
+    // EXTENSION POINT to manipulate $article_order
+    $article_order = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_order));
+    $article_order = rex_structure_service::escape($article_order);
+
     // ---------- COUNT DATA
     $sql = rex_sql::factory();
-    // $sql->setDebug();
+    $sql->setDebug();
     $sql->setQuery('SELECT COUNT(*) as artCount
                 FROM
                     ' . rex::getTablePrefix() . 'article
@@ -250,7 +255,8 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
                     ((parent_id=' . $category_id . ' AND startarticle=0) OR (id=' . $category_id . ' AND startarticle=1))
                     AND clang_id=' . $clang . '
                 ORDER BY
-                    priority, name');
+                    '.$article_order
+    );
 
     // --------------------- ADD PAGINATION
     $artPager = new rex_pager(30, 'artstart');
@@ -261,8 +267,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     echo $artFragment->parse('core/navigations/pagination.php');
 
     // ---------- READ DATA
-    $article_order = rex_structure_service::getArticleOrder($category_id); //@todo must be escaped
-
     $sql->setQuery('SELECT *
                 FROM
                     ' . rex::getTablePrefix() . 'article

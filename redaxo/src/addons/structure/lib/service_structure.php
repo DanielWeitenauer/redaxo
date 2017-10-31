@@ -1,30 +1,24 @@
 <?php
 /**
- * @author Daniel Weitenauer
- * @copyright (c) 2017 studio ahoi
+ * @package redaxo\structure
  */
-
 class rex_structure_service
 {
-    const ARTICLE_ORDER_VALUE = 'article_order';
-
     /**
-     * @param int $category_id
+     * @param string $string
      * @return string
      */
-    public static function getArticleOrder($category_id)
+    public static function escape($string)
     {
-        $return = 'priority, name';
+        $return = explode(',', $string);
+        // Remove empty
+        array_filter($return, function($item) {
+            return trim($item);
+        });
+        array_walk($return, function(&$item) {
+            $item ='`'.trim($item).'`';
+        });
 
-        $category = rex_category::get($category_id);
-
-        if ($category instanceof rex_category) {
-            $article_order = trim($category->getValue(self::ARTICLE_ORDER_VALUE));
-            if ($article_order) {
-                $return = $article_order;
-            }
-        }
-
-        return $return;
+        return implode(',',$return);
     }
 }
