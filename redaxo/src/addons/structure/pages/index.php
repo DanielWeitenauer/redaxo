@@ -163,7 +163,9 @@ do {
         ];
 
         // EXTENSION POINT to manipulate the $category_actions array
-        $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, $action_params));
+        $category_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_actions, [
+            'action_params' => $action_params,
+        ]));
 
         // Normalize array
         array_walk ($category_actions, function(&$item) {
@@ -293,9 +295,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
                 'article_create_date' => new rex_structure_article_create_date($action_params),
             ],
             'prio' => [
-                'article_priority_dec' => new rex_structure_article_priority_dec($action_params),
                 'article_priority' => new rex_structure_article_priority($action_params),
-                'article_priority_inc' => new rex_structure_article_priority_inc($action_params),
             ],
             'status' => [
                 'article_edit' => new rex_structure_article_edit($action_params),
@@ -311,7 +311,9 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         ];
 
         // EXTENSION POINT to manipulate the $article_actions array
-        $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_actions, $action_params));
+        $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_actions, [
+            'action_params' => $action_params,
+        ]));
 
         // Normalize array
         array_walk ($article_actions, function(&$item) {
