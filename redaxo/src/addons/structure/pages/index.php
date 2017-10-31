@@ -189,7 +189,7 @@ do {
 // Header
 $category_actions_header = [
     'icon' => [
-        'category_icon' => $structure_category_add = new rex_structure_category_add([
+        'category_icon' => new rex_structure_category_add([
             'edit_id' => $category_id,
             'sql' => $KAT,
             'pager' => $catPager,
@@ -337,7 +337,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     // Header
     $article_actions_header = [
         'icon' => [
-            'article_icon' => $structure_article_add = new rex_structure_article_add([
+            'article_icon' => new rex_structure_article_add([
                 'edit_id' => $category_id,
                 'sql' => $sql,
                 'pager' => $artPager,
