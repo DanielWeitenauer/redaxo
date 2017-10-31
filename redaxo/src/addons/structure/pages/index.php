@@ -204,7 +204,7 @@ $category_actions_header = [
 // EXTENSION POINT to manipulate the $category_actions array for the header
 $category_actions_header = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS_HEADER', $category_actions_header, [
     'category_actions' => $category_actions,
-    'action_params_header' => $action_params_header,
+    'action_params' => $action_params,
 ]));
 $category_actions_header = rex_structure_service::normalizeArray($category_actions_header);
 
