@@ -92,20 +92,19 @@ class rex_metainfo_category_handler extends rex_metainfo_handler
             $params['activeItem']->setValue('category_id', $params['id']);
         }
 
-        /*$result = '
-            <tr id="' . self::CONTAINER . '" class="collapse mark">
+        if (rex_string::versionCompare(rex_addon::get('structure')->getVersion(), '3.0.0-dev', '<')) {
+            $result = '
+            <tr id="'.self::CONTAINER.'" class="collapse mark">
                 <td colspan="2"></td>
                 <td colspan="5">
                     <div class="rex-collapse-content">
-                    ' . parent::renderFormAndSave(self::PREFIX, $params) . '
+                    '.parent::renderFormAndSave(self::PREFIX, $params).'
                     </div>
                 </td>
-            </tr>';*/
-        $result = '
-            <div class="rex-collapse-content">
-            ' . parent::renderFormAndSave(self::PREFIX, $params) . '
-            </div>
-            ';
+            </tr>';
+        } else {
+            $result = parent::renderFormAndSave(self::PREFIX, $params);
+        }
 
         // Bei CAT_ADDED und CAT_UPDATED nur speichern und kein Formular zurückgeben
         if ('CAT_UPDATED' == $ep->getName() || 'CAT_ADDED' == $ep->getName()) {
@@ -123,4 +122,6 @@ rex_extension::register('CAT_FORM_EDIT', [$catHandler, 'extendForm']);
 rex_extension::register('CAT_ADDED', [$catHandler, 'extendForm']);
 rex_extension::register('CAT_UPDATED', [$catHandler, 'extendForm']);
 
-rex_extension::register('CAT_FORM_BUTTONS', [$catHandler, 'renderToggleButton']);
+if (rex_string::versionCompare(rex_addon::get('structure')->getVersion(), '3.0.0-dev', '<')) {
+    rex_extension::register('CAT_FORM_BUTTONS', [$catHandler, 'renderToggleButton']);
+}
