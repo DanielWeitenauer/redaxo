@@ -60,7 +60,7 @@ class rex_structure_article_add extends rex_fragment
             $select->setSelected();
 
             $template_select = '
-                <dl class="dl-horizontal text-left">
+                <dl class="rex-form-group form-group">
                     <dt><label for="article-name">'.rex_i18n::msg('header_template').'</label></dt>
                     <dd>'.$select->get().'</dd>
                 </dl>
@@ -93,19 +93,23 @@ class rex_structure_article_add extends rex_fragment
             'modal_title' => rex_i18n::msg('article_add'),
             'modal_body' => '
                 <input type="hidden" name="rex-api-call" value="article_add" />
-                <dl class="dl-horizontal text-left">
-                    <dt><label for="article-name">'.rex_i18n::msg('header_article_name').'</label></dt>
-                    <dd><input class="form-control" type="text" name="article-name" autofocus /></dd>
-                </dl>
-                '.$template_select.'
-                <dl class="dl-horizontal text-left">
-                    <dt>'.rex_i18n::msg('header_date').'</dt>
-                    <dd>'.rex_formatter::strftime(time(), 'date').'</dd>
-                </dl>
-                <dl class="dl-horizontal text-left">
-                    <dt><label for="article-position">'.rex_i18n::msg('header_priority').'</label></dt>
-                    <dd><input id="article-position" class="form-control" type="text" name="article-position" value="'.($this->pager->getRowCount() + 1).'" /></dd>
-                </dl>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <dl class="rex-form-group form-group">
+                            <dt><label for="article-name">'.rex_i18n::msg('header_article_name').'</label></dt>
+                            <dd><input class="form-control" type="text" name="article-name" autofocus /></dd>
+                        </dl>
+                        '.$template_select.'
+                        <dl class="rex-form-group form-group">
+                            <dt>'.rex_i18n::msg('header_date').'</dt>
+                            <dd>'.rex_formatter::strftime(time(), 'date').'</dd>
+                        </dl>
+                        <dl class="rex-form-group form-group">
+                            <dt><label for="article-position">'.rex_i18n::msg('header_priority').'</label></dt>
+                            <dd><input id="article-position" class="form-control" type="text" name="article-position" value="'.($this->pager->getRowCount() + 1).'" /></dd>
+                        </dl>
+                    </div>
+                </div>
             ',
             'modal_button' => $fragment_button->parse('core/buttons/button.php'),
         ]);

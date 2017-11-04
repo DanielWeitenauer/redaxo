@@ -56,7 +56,7 @@ class rex_structure_category_move extends rex_fragment
         return '  
             <div class="modal fade" id="category-move-'.$this->edit_id.'">
                 <div class="modal-dialog">
-                    <form id="rex-form-category-move-'.$this->edit_id.'" class="modal-content form-horizontal" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
+                    <form id="rex-form-category-move-'.$this->edit_id.'" class="modal-content form-vertical" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             <h3 class="modal-title">'.rex_i18n::msg('content_submitmovecategory').'</h3>
@@ -64,10 +64,14 @@ class rex_structure_category_move extends rex_fragment
                         <div class="modal-body">
                             <input type="hidden" name="rex-api-call" value="category_move" />
                             <input type="hidden" name="category_id" value="'.$this->edit_id.'" />
-                            <dl class="dl-horizontal text-left">
-                                <dt><label for="category_id_new">'.rex_i18n::msg('move_category').'</label></dt>
-                                <dd>'.$category_select->get().'</dd>
-                            </dl>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                   <dl class="rex-form-group form-group">
+                                        <dt><label for="category_id_new">'.rex_i18n::msg('move_category').'</label></dt>
+                                        <dd>'.$category_select->get().'</dd>
+                                    </dl>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-send" type="submit" data-confirm="'.rex_i18n::msg('content_submitmovecategory').'?">'.rex_i18n::msg('content_submitmovecategory').'</button>

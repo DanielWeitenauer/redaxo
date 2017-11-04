@@ -55,7 +55,7 @@ class rex_structure_article_move extends rex_fragment
         return '  
             <div class="modal fade" id="article-move-'.$this->edit_id.'">
                 <div class="modal-dialog">
-                    <form id="rex-form-content-article-move-'.$this->edit_id.'" class="modal-content form-inline" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
+                    <form id="rex-form-content-article-move-'.$this->edit_id.'" class="modal-content form-vertical" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             <h3 class="modal-title">'.rex_i18n::msg('content_submitmovearticle').'</h3>
@@ -63,10 +63,14 @@ class rex_structure_article_move extends rex_fragment
                         <div class="modal-body">
                             <input type="hidden" name="rex-api-call" value="article_move" />
                             <input type="hidden" name="article_id" value="'.$article_id.'" />
-                            <dl class="dl-horizontal text-left">
-                                <dt><label for="new-category-id">'.rex_i18n::msg('move_article').'</label></dt>
-                                <dd>'.$category_select->get().'</dd>
-                            </dl>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <dl class="rex-form-group form-group">
+                                        <dt><label for="new-category-id">'.rex_i18n::msg('move_article').'</label></dt>
+                                        <dd>'.$category_select->get().'</dd>
+                                    </dl>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-send" type="submit" data-confirm="'.rex_i18n::msg('content_submitmovearticle').'?">'.rex_i18n::msg('content_submitmovearticle').'</button>

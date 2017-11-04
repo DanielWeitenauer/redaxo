@@ -86,10 +86,14 @@ class rex_structure_article_copy extends rex_fragment
             'modal_body' => '
                 <input type="hidden" name="rex-api-call" value="article_copy" />
                 <input type="hidden" name="article_id" value="'.$this->edit_id.'" />
-                <dl class="dl-horizontal text-left">
-                    <dt><label for="category_copy_id_new">'.rex_i18n::msg('copy_article').'</label></dt>
-                    <dd>'.$category_select->get().'</dd>
-                </dl>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <dl class="rex-form-group form-group">
+                            <dt><label for="category_copy_id_new">'.rex_i18n::msg('copy_article').'</label></dt>
+                            <dd>'.$category_select->get().'</dd>
+                        </dl>
+                    </div>
+                </div>
             ',
             'modal_button' => $fragment_button->parse('core/buttons/button.php'),
         ]);
