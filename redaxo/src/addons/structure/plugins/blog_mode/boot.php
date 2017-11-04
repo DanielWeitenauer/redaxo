@@ -10,7 +10,7 @@ rex_extension::register('PAGE_STRUCTURE_ARTICLE_ORDER', function (rex_extension_
 
     $category = rex_category::get($category_id);
     if ($category instanceof rex_category) {
-        $new_article_order = trim($category->getValue('article_order'));
+        $new_article_order = rex_session('blog_mode::article_order', 'string', $category->getValue('article_order'));
         if ($new_article_order) {
             $article_order = $new_article_order;
         }

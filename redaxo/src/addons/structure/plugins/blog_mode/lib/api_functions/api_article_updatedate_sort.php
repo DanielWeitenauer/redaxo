@@ -11,7 +11,7 @@ class rex_api_article_updatedate_sort extends rex_api_function
         $category_id = rex_request('category_id', 'int');
         $clang_id = rex_request('clang_id', 'int');
         $category = rex_category::get($category_id);
-        $article_order = $category->getValue('article_order');
+        $article_order = rex_session('blog_mode::article_order', 'string', $category->getValue('article_order'));
 
         if ($article_order && $article_order != 'priority, name') {
             switch ($article_order) {
@@ -25,17 +25,7 @@ class rex_api_article_updatedate_sort extends rex_api_function
                     break;
             }
 
-            $sql = rex_sql::factory();
-            $sql->setQuery('
-                UPDATE 
-                    '.rex::getTable('article').' 
-                SET 
-                    cat_article_order = "'.$article_order.'" 
-                WHERE 
-                    id = '.$category_id.' AND clang_id = '.$clang_id
-            );
-
-            rex_article_cache::delete($category_id);
+            rex_set_session('blog_mode::article_order', $article_order);
         }
 
         return new rex_api_result(true, rex_i18n::msg('sort_order_changed'));
