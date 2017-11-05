@@ -7,10 +7,13 @@
 rex_extension::register('PAGE_STRUCTURE_ARTICLE_ORDER', function (rex_extension_point $ep) {
     $article_order = $ep->getSubject();
     $category_id = $ep->getParam('category_id');
+    $clang_id = $ep->getParam('clang_id');
 
     $category = rex_category::get($category_id);
     if ($category instanceof rex_category) {
-        $new_article_order = rex_session('blog_mode::article_order', 'string', $category->getValue('article_order'));
+        $article_orders = rex_session('blog_mode::article_order', 'array');
+        $new_article_order = isset($article_orders[$category_id][$clang_id]) ? $article_orders[$category_id][$clang_id] : $category->getValue('article_order');
+
         if ($new_article_order) {
             $article_order = $new_article_order;
         }
