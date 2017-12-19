@@ -155,10 +155,6 @@ do {
             'category_delete' => new rex_structure_category_delete($action_params),
             'category_status' => new rex_structure_category_status($action_params),
         ],
-        'action' => [
-            'category2article' => new rex_structure_category2article($action_params),
-            'category_move' => new rex_structure_category_move($action_params),
-        ],
     ];
 
     // EXTENSION POINT to manipulate the $category_actions array
@@ -311,12 +307,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
                 'article_edit' => new rex_structure_article_edit($action_params),
                 'article_delete' => new rex_structure_article_delete($action_params),
                 'article_status' => new rex_structure_article_status($action_params),
-            ],
-            'action' => [
-                'article2category' => new rex_structure_article2category($action_params),
-                'article2startarticle' => new rex_structure_article2startarticle($action_params),
-                'article_move' => new rex_structure_article_move($action_params),
-                'article_copy' => new rex_structure_article_copy($action_params),
             ],
         ];
 
