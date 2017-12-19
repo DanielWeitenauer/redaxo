@@ -2,7 +2,7 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_name_sortable extends rex_fragment
+class rex_structure_article_header_name_sortable extends rex_fragment
 {
     /**
      * @return string

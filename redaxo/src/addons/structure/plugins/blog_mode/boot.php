@@ -52,9 +52,9 @@ rex_extension::register('PAGE_STRUCTURE_ARTICLE_ACTIONS_HEADER', function (rex_e
     $category = rex_category::get($action_params_header['edit_id']);
 
     if ($category instanceof rex_category && $category->getValue('article_order')) {
-        $article_actions_header['article_name']['article_name'] = new rex_structure_article_name_sortable($action_params_header);
-        $article_actions_header['create_date']['article_create_date'] = new rex_structure_article_createdate_sortable($action_params_header);
-        $article_actions_header['update_date']['article_update_date'] = new rex_structure_article_updatedate_sortable($action_params_header);
+        $article_actions_header['article_name']['article_name'] = new rex_structure_article_header_name_sortable($action_params_header);
+        $article_actions_header['create_date']['article_create_date'] = new rex_structure_article_header_createdate_sortable($action_params_header);
+        $article_actions_header['update_date']['article_update_date'] = new rex_structure_article_header_updatedate_sortable($action_params_header);
     }
 
     return $article_actions_header;
