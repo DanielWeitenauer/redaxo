@@ -2,26 +2,44 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_delete extends rex_fragment
+class rex_structure_article_delete extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (rex_article::get($this->edit_id)->isStartArticle()) {
-            return '';
+        $article_id = $this->getVar('edit_id');
+        $category_id = rex_article::get($article_id)->getCategoryId();
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
+
+        $button_params = [
+            'label' => rex_i18n::msg('delete'),
+            'icon' => 'rex-icon rex-icon-delete',
+            'attributes' => [
+                'class' => [
+                    'btn',
+                ],
+                'title' => rex_i18n::msg('delete'),
+                'data-confirm' => rex_i18n::msg('delete').'?',
+            ],
+        ];
+
+        if (!rex_article::get($article_id)->isStartArticle() && rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            $url_params = array_merge($this->getVar('url_params'), [
+                'page' => 'structure',
+                'rex-api-call' => 'article_delete',
+                'article_id' => $article_id,
+                'category_id' => $category_id,
+            ]);
+            $button_params['url'] = $context->getUrl($url_params, false);
+            $button_params['attributes']['class'][] = 'btn-default';
+        } else {
+            $button_params['attributes']['class'][] = 'text-muted';
         }
 
-        $category_id = rex_article::get($this->edit_id)->getCategoryId();
-
-        $url_params = array_merge($this->url_params, [
-            'page' => 'structure',
-            'rex-api-call' => 'article_delete',
-            'article_id' => $this->edit_id,
-            'category_id' => $category_id,
-        ]);
-
-        return '<a class="btn btn-default" href="'.$this->context->getUrl($url_params).'" data-confirm="'.rex_i18n::msg('delete').'?" title="'.rex_i18n::msg('delete').'"><i class="rex-icon rex-icon-delete"></i></a>';
+        return $this->getButtonFragment($button_params);
     }
 }

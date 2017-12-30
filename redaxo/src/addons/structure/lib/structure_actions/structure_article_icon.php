@@ -2,35 +2,46 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_icon extends rex_fragment
+class rex_structure_article_icon extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if ($this->edit_id == rex_article::getSiteStartArticleId()) {
-            $class = ' rex-icon-sitestartarticle';
-        } elseif ($this->sql->getValue('startarticle') == 1) {
-            $class = ' rex-icon-startarticle';
+        $article_id = $this->getVar('edit_id');
+        $category_id = rex_article::get($article_id)->getCategoryId();
+        /** @var rex_sql $sql */
+        $sql = $this->getVar('sql');
+
+        if ($article_id == rex_article::getSiteStartArticleId()) {
+            $icon_class = 'rex-icon rex-icon-sitestartarticle';
+        } elseif ($sql->getValue('startarticle') == 1) {
+            $icon_class = 'rex-icon rex-icon-startarticle';
         } else {
-            $class = ' rex-icon-article';
+            $icon_class = 'rex-icon rex-icon-article';
         }
 
-        $article_icon = '<i class="rex-icon'.$class.'"></i>';
-        $article_title = htmlspecialchars($this->sql->getValue('name'));
-        $category_id = rex_article::get($this->edit_id)->getCategoryId();
+        $button_params = [
+            'attributes' => [
+                'class' => [
+                    'btn',
+                    $icon_class,
+                ],
+                'title' => htmlspecialchars($sql->getValue('name')),
+            ],
+        ];
 
         if (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
-            $edit_url = $this->context->getUrl([
+            $url_params = array_merge($this->getVar('url_params'), [
                 'page' => 'content/edit',
-                'article_id' => $this->edit_id,
+                'article_id' => $article_id,
                 'mode' => 'edit'
             ]);
-
-            $article_icon = '<a href="'.$edit_url.'" title="'.$article_title.'">'.$article_icon.'</a>';
+            $button_params['url'] = $this->getVar('context')->getUrl($url_params, false);
         }
 
-        return $article_icon;
+        return $this->getButtonFragment($button_params);
     }
 }

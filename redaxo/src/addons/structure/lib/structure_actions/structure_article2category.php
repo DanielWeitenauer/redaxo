@@ -2,41 +2,42 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article2category extends rex_fragment
+class rex_structure_article2category extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
+
         // User has no permission or article is already category
-        if (rex_article::get($this->edit_id)->isStartArticle() || !rex::getUser()->hasPerm('article2category[]')) {
+        if ($article->isStartArticle() || !rex::getUser()->hasPerm('article2category[]')) {
             return '';
         }
 
-        // Return button
-        $url_params = array_merge($this->url_params, [
+        $url_params = array_merge($this->getVar('url_params'), [
             'rex-api-call' => 'article2category',
-            'article_id' => $this->edit_id,
+            'article_id' => $article_id,
         ]);
 
         $button_params = [
-            'button' => [
-                'hidden_label' => rex_i18n::msg('content_tocategory'),
-                'icon' => 'category',
-                'url' => $this->context->getUrl($url_params, false),
-                'attributes' => [
-                    'class' => [
-                        'btn-default',
-                    ],
-                    'title' => rex_i18n::msg('content_tocategory'),
-                    'data-confirm' => rex_i18n::msg('content_tocategory').'?',
+            'label' => rex_i18n::msg('content_tocategory'),
+            'icon' => 'rex-icon rex-icon-category',
+            'url' => $context->getUrl($url_params, false),
+            'attributes' => [
+                'class' => [
+                    'btn btn-default',
                 ],
-            ]
+                'title' => rex_i18n::msg('content_tocategory'),
+                'data-confirm' => rex_i18n::msg('content_tocategory').'?',
+            ],
         ];
 
-        $this->setVar('buttons', $button_params);
-
-        return $this->parse('core/buttons/button.php');
+        return $this->getButtonFragment($button_params);
     }
 }

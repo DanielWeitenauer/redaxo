@@ -16,10 +16,14 @@ if (rex::isBackend()) {
         $params = $ep->getParams();
         $subject = $ep->getSubject();
 
-        $action_params = [
+        $article = rex_article::get($params['article_id']);
+        $category = $article instanceof rex_article ? $article->getCategory() : null;
+
+        $action_vars = [
+            'category' => $category,
             'edit_id' => $params['article_id'],
-            #'sql' => '',
-            #'pager' => $artPager,
+            'sql' => null,
+            'pager' => null,
             'clang' => $params['clang'],
             'context' => new rex_context([
                 'page' => rex_be_controller::getCurrentPage(),
@@ -29,45 +33,47 @@ if (rex::isBackend()) {
             ]),
             'url_params' => [],
         ];
-        $article_actions = [
-            'meta' => [
-                'created_on' => new rex_structure_article_create_date($action_params),
-                'created_by' => new rex_structure_article_create_user($action_params),
-                'updated_on' => new rex_structure_article_update_date($action_params),
-                'updated_by' => new rex_structure_article_update_user($action_params),
-            ],
-            'status' => [
-                'status_edit' => new rex_structure_article_edit($action_params),
-                'status_delete' => new rex_structure_article_delete($action_params),
-                'status_status' => new rex_structure_article_status($action_params),
-            ],
-            'action' => [
-                'article2category' => new rex_structure_article2category($action_params),
-                'article2startarticle' => new rex_structure_article2Startarticle($action_params),
-                'article_move' => new rex_structure_article_move($action_params),
-                'article_copy' => new rex_structure_article_copy($action_params),
-            ],
-            'content_action' => [
-                'content_copy' => new rex_structure_content_copy($action_params),
-            ],
-        ];
 
-        // EXTENSION POINT to manipulate the $article_actions array
-        $article_actions = rex_extension::registerPoint(new rex_extension_point('PAGE_CONTENT_ARTICLE_ACTIONS', $article_actions, $action_params));
+        // Predefine columns
+        $actions = new rex_structure_action_row($action_vars);
+        $actions['meta'] = new rex_structure_action_column();
+        $actions['status'] = new rex_structure_action_column();
+        $actions['action'] = new rex_structure_action_column();
+        $actions['content_action'] = new rex_structure_action_column();
 
-        $fragment = new rex_fragment([
-            'article' => rex_article::get($params['article_id'], $params['clang']),
-            'article_status_types' => rex_article_service::statusTypes(),
-            'article_actions' => $article_actions,
-        ]);
-        $sidebar =  $fragment->parse('sidebar_actions.php');
+        // Add fields
+        $actions['meta']
+            ->setField('created_on', new rex_structure_article_create_date($action_vars))
+            ->setField('created_by', new rex_structure_article_create_user($action_vars))
+            ->setField('updated_on', new rex_structure_article_update_date($action_vars))
+            ->setField('updated_by', new rex_structure_article_update_user($action_vars));
+
+        $actions['status']
+            ->setField('status_status', new rex_structure_article_status($action_vars));
+        $actions['action']
+            ->setField('status_edit', new rex_structure_article_edit($action_vars))
+            ->setField('status_delete', new rex_structure_article_delete($action_vars))
+            ->setField('article2category', new rex_structure_article2category($action_vars))
+            ->setField('article2startarticle', new rex_structure_article2Startarticle($action_vars))
+            ->setField('article_move', new rex_structure_article_move($action_vars))
+            ->setField('article_copy', new rex_structure_article_copy($action_vars));
+        $actions['content_action']
+            ->setField('content_copy', new rex_structure_content_copy($action_vars));
+
+        // EXTENSION POINT to manipulate the $article_actions
+        $actions = rex_extension::registerPoint(new rex_extension_point('PAGE_CONTENT_ARTICLE_ACTIONS', $actions, [
+            'action_vars' => $action_vars,
+        ]));
+
+        $sidebar = $actions->getFragment('content_sidebar_actions.php');
 
         $fragment = new rex_fragment();
-        $fragment->setVar('title', '<i class="rex-icon rex-icon-info"></i> '.rex_i18n::msg('metadata'), false);
-        $fragment->setVar('body', $sidebar, false);
-        $fragment->setVar('collapse', true);
-        $fragment->setVar('collapsed', false);
-        $content = $fragment->parse('core/page/section.php');
+        $content = $fragment
+            ->setVar('title', '<i class="rex-icon rex-icon-info"></i> '.rex_i18n::msg('metadata'), false)
+            ->setVar('body', $sidebar, false)
+            ->setVar('collapse', true)
+            ->setVar('collapsed', false)
+            ->parse('core/page/section.php');
 
         return $content.$subject;
     });

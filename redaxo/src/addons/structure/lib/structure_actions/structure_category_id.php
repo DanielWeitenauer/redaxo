@@ -2,17 +2,23 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_category_id extends rex_fragment
+class rex_structure_category_id extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (!$this->edit_id) {
-            return '';
-        }
+        $button_params = [
+            'label' => htmlspecialchars($this->getVar('sql')->getValue('id')),
+            'attributes' => [
+                'class' => [
+                    'btn',
+                ],
+            ],
+        ];
 
-        return $this->edit_id;
+        return $this->getButtonFragment($button_params);
     }
 }

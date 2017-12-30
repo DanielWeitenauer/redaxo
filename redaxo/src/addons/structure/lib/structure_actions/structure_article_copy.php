@@ -2,41 +2,43 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_copy extends rex_fragment
+class rex_structure_article_copy extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
+        $article_id = $this->getVar('edit_id');
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
+
         if (!rex::getUser()->hasPerm('copyArticle[]')) {
             return '';
         }
 
         // Return button
-        $url_params = array_merge($this->url_params, [
-            'form_article_copy' => $this->edit_id,
-            'article_id' => $this->edit_id,
+        $url_params = array_merge($this->getVar('url_params'), [
+            'form_article_copy' => $article_id,
+            'article_id' => $article_id,
         ]);
 
         $button_params = [
-            'button' => [
-                'label' => '<i class="rex-icon fa-copy"></i><span class="sr-only">'.rex_i18n::msg('copy_article').'</span>',
-                'url' => $this->context->getUrl($url_params, false),
-                'attributes' => [
-                    'class' => [
-                        'btn-default',
-                    ],
-                    'title' => rex_i18n::msg('copy_article'),
+            'label' => rex_i18n::msg('copy_article'),
+            'icon' => 'rex-icon fa-copy',
+            'url' => $context->getUrl($url_params, false),
+            'attributes' => [
+                'class' => [
+                    'btn btn-default',
                 ],
             ],
         ];
-        $this->setVar('buttons', $button_params, false);
 
-        $return = $this->parse('core/buttons/button.php');
+        $return = $this->getButtonFragment($button_params);
 
         // Show form if necessary
-        if (rex_request('form_article_copy', 'int', -1) == $this->edit_id) {
+        if (rex_request('form_article_copy', 'int', -1) == $article_id) {
             $return .= $this->getModal();
         }
 
@@ -45,11 +47,15 @@ class rex_structure_article_copy extends rex_fragment
 
     /**
      * @return string
+     * @throws rex_exception
      */
     protected function getModal()
     {
-        $article = rex_article::get($this->edit_id);
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
         $category_id = $article->getCategoryId();
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
 
         $category_select = new rex_category_select(false, false, true, !rex::getUser()->getComplexPerm('structure')->hasMountPoints());
         $category_select->setName('category_copy_id_new');
@@ -77,15 +83,15 @@ class rex_structure_article_copy extends rex_fragment
             $button_params['button']['attributes']['accesskey'] = $access_keys['save'];
             $button_params['button']['attributes']['title'] .= ' ['.$access_keys['save'].']';
         }
-        $fragment_button = new self(['buttons' => $button_params]);
+        $fragment_button = new rex_fragment(['buttons' => $button_params]);
 
-        $fragment_modal = new self([
-            'modal_id' => 'article-copy-'.$this->edit_id,
-            'modal_url' => $this->context->getUrl($this->url_params),
+        $fragment_modal = new rex_fragment([
+            'modal_id' => 'article-copy-'.$article_id,
+            'modal_url' => $context->getUrl(),
             'modal_title' => rex_i18n::msg('content_submitcopyarticle'),
             'modal_body' => '
                 <input type="hidden" name="rex-api-call" value="article_copy" />
-                <input type="hidden" name="article_id" value="'.$this->edit_id.'" />
+                <input type="hidden" name="article_id" value="'.$article_id.'" />
                 <div class="row">
                     <div class="col-xs-12">
                         <dl class="rex-form-group form-group">
@@ -98,6 +104,6 @@ class rex_structure_article_copy extends rex_fragment
             'modal_button' => $fragment_button->parse('core/buttons/button.php'),
         ]);
 
-        return $fragment_modal->parse('structure/modal.php');
+        return $fragment_modal->parse('structure/structure_action_modal.php');
     }
 }

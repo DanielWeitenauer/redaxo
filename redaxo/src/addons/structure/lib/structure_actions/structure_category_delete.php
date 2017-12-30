@@ -2,22 +2,39 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_category_delete extends rex_fragment
+class rex_structure_category_delete extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (!$this->edit_id || !rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
-            return '';
+        $category_id = $this->getVar('edit_id');
+
+        $button_params = [
+            'label' => rex_i18n::msg('delete'),
+            'icon' => 'rex-icon rex-icon-delete',
+            'attributes' => [
+                'class' => [
+                    'btn',
+                ],
+                'title' => rex_i18n::msg('delete'),
+                'data-confirm' => rex_i18n::msg('delete').'?',
+            ],
+        ];
+
+        if (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            $url_params = array_merge($this->getVar('url_params'), [
+                'rex-api-call' => 'category_delete',
+                'category-id' => $category_id,
+            ]);
+            $button_params['url'] = $this->getVar('context')->getUrl($url_params, false);
+            $button_params['attributes']['class'][] = 'btn-default';
+        } else {
+            $button_params['attributes']['class'][] = 'text-muted';
         }
 
-        $url_params = array_merge($this->url_params, [
-            'rex-api-call' => 'category_delete',
-            'category-id' => $this->edit_id,
-        ]);
-
-        return '<a class="btn btn-default" href="'.$this->context->getUrl($url_params).'" data-confirm="'.rex_i18n::msg('delete').'?" title="'.rex_i18n::msg('delete').'"><i class="rex-icon rex-icon-delete"></i></a>';
+        return $this->getButtonFragment($button_params);
     }
 }

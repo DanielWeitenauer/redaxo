@@ -2,25 +2,42 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_category_edit extends rex_fragment
+class rex_structure_category_edit extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (!$this->edit_id || !rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
+        $category_id = $this->getVar('edit_id');
+
+        if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
             return '';
         }
 
-        $url_params = array_merge($this->url_params, [
-            'form_category_edit' => $this->edit_id,
-        ]);
+        $button_params = [
+            'label' => rex_i18n::msg('change'),
+            'icon' => 'rex-icon rex-icon-edit',
+            'attributes' => [
+                'class' => [
+                    'btn',
+                ],
+            ],
+        ];
 
-        $return = '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default" title="'.rex_i18n::msg('change').'"><i class="rex-icon rex-icon-edit"></i></a>';
+        if (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            $url_params = array_merge($this->getVar('url_params'), [
+                'form_category_edit' => $category_id,
+            ]);
+            $button_params['url'] = $this->getVar('context')->getUrl($url_params, false);
+            $button_params['attributes']['class'][] = 'btn-default';
+        }
+
+        $return = $this->getButtonFragment($button_params);
 
         // Display form if necessary
-        if (rex_request('form_category_edit', 'int', -1) == $this->edit_id) {
+        if (rex_request('form_category_edit', 'int', -1) == $category_id) {
             $return .= $this->getModal();
         }
 
@@ -32,7 +49,10 @@ class rex_structure_category_edit extends rex_fragment
      */
     protected function getModal()
     {
-        if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
+        $category_id = $this->getVar('edit_id');
+        $sql = $this->getVar('sql');
+
+        if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
             return '';
         }
 
@@ -42,44 +62,44 @@ class rex_structure_category_edit extends rex_fragment
 
         // Extension point
         $cat_form_buttons = rex_extension::registerPoint(new rex_extension_point('CAT_FORM_BUTTONS', '', [
-           'id' => $this->edit_id,
+           'id' => $category_id,
            'clang' => $clang,
         ]));
 
         // Extension point
         $cat_form_edit = rex_extension::registerPoint(new rex_extension_point('CAT_FORM_EDIT', '', [
-            'id' => $this->edit_id,
+            'id' => $category_id,
             'clang' => $clang,
-            'category' => $this->sql,
-            'catname' => $this->sql->getValue('catname'),
-            'catpriority' => $this->sql->getValue('catpriority'),
-            'data_colspan' => ($data_colspan + 1),
+            'category' => $sql,
+            'catname' => $sql->getValue('catname'),
+            'catpriority' => $sql->getValue('catpriority'),
+            'data_colspan' => $data_colspan + 1,
         ]));
 
         return '  
-            <div class="modal fade" id="category-edit-'.$this->edit_id.'">
+            <div class="modal fade" id="category-edit-'.$category_id.'">
                 <div class="modal-dialog">
-                    <form id="rex-form-category-move-'.$this->edit_id.'" class="modal-content form-vertical" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
+                    <form id="rex-form-category-move-'.$category_id.'" class="modal-content form-vertical" action="'.$this->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             <h3 class="modal-title">'.rex_i18n::msg('header_category').'</h3>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="rex-api-call" value="category_edit" />
-                            <input type="hidden" name="category-id" value="'.$this->edit_id.'" />
+                            <input type="hidden" name="category-id" value="'.$category_id.'" />
                             <div class="row">
                                 <div class="col-xs-12">
                                     <dl class="rex-form-group form-group">
                                         <dt>'.rex_i18n::msg('header_id').'</dt>
-                                        <dd>'.$this->edit_id.'</dd>
+                                        <dd>'.$category_id.'</dd>
                                     </dl>
                                     <dl class="rex-form-group form-group">
                                         <dt><label for="category-name">'.rex_i18n::msg('header_category').'</label></dt>
-                                        <dd><input class="form-control rex-js-autofocus" type="text" name="category-name" value="'.htmlspecialchars($this->sql->getValue('catname')).'" autofocus /></dd>
+                                        <dd><input class="form-control rex-js-autofocus" type="text" name="category-name" value="'.htmlspecialchars($this->getSqlValue('catname')).'" autofocus /></dd>
                                     </dl>
                                     <dl class="rex-form-group form-group">
                                         <dt><label for="category-position">'.rex_i18n::msg('header_priority').'</label></dt>
-                                        <dd><input class="form-control" type="text" name="category-position" value="'.htmlspecialchars($this->sql->getValue('catpriority')).'" /></dd>
+                                        <dd><input class="form-control" type="text" name="category-position" value="'.htmlspecialchars($this->getSqlValue('catpriority')).'" /></dd>
                                     </dl>
                                     '.$cat_form_buttons.'
                                     '.$cat_form_edit.'
@@ -95,7 +115,7 @@ class rex_structure_category_edit extends rex_fragment
             </div> 
             <script>
                 $(document).ready(function() {
-                    $("#category-edit-'.$this->edit_id.'").modal();
+                    $("#category-edit-'.$category_id.'").modal();
                 });
             </script>
         ';

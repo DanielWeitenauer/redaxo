@@ -2,44 +2,46 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_add extends rex_fragment
+class rex_structure_article_add extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
+        $category_id = $this->getVar('edit_id');
+
+        if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
             return '';
         }
 
-        // Return button
-        $url_params = array_merge($this->url_params, [
-            'form_article_add' => $this->edit_id,
+        $url_params = array_merge($this->getVar('url_params'), [
+            'form_article_add' => $category_id,
         ]);
 
         $button_params = [
-            'button' => [
-                'hidden_label' => rex_i18n::msg('article_add'),
-                'icon' => 'add-article',
-                'url' => $this->context->getUrl($url_params, false),
-                'attributes' => [
-                    'title' => rex_i18n::msg('article_add'),
+            'label' => rex_i18n::msg('article_add'),
+            'icon' => 'rex-icon rex-icon-add-article',
+            'url' => $this->getVar('context')->getUrl($url_params, false),
+            'attributes' => [
+                'class' => [
+                    'btn'.(!$this->getVar('hide_border') ? ' btn-default' : ''),
                 ],
+                'title' => rex_i18n::msg('article_add'),
             ],
         ];
+
         if (rex::getProperty('use_accesskeys')) {
             $access_keys = (array) rex::getProperty('accesskeys', []);
-            $button_params['button']['attributes']['accesskey'] = $access_keys['add_2'];
-            $button_params['button']['attributes']['title'] .= ' ['.$access_keys['add_2'].']';
+            $button_params['attributes']['accesskey'] = $access_keys['add_2'];
+            $button_params['attributes']['title'] .= ' ['.$access_keys['add_2'].']';
         }
 
-        $this->setVar('buttons', $button_params);
-
-        $return = $this->parse('core/buttons/button.php');
+        $return = $this->getButtonFragment($button_params);
 
         // Show form if necessary
-        if (rex_request('form_article_add', 'int', -1) == $this->edit_id) {
+        if (rex_request('form_article_add', 'int', -1) == $category_id) {
             $return .= $this->getModal();
         }
 
@@ -48,9 +50,16 @@ class rex_structure_article_add extends rex_fragment
 
     /**
      * @return string
+     * @throws rex_exception
      */
     protected function getModal()
     {
+        $category_id = $this->getVar('edit_id');
+
+        if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            return '';
+        }
+
         $template_select = '';
         if (rex_addon::get('structure')->getPlugin('content')->isAvailable()) {
             $select = new rex_template_select();
@@ -85,11 +94,13 @@ class rex_structure_article_add extends rex_fragment
             $button_params['button']['attributes']['accesskey'] = $access_keys['save'];
             $button_params['button']['attributes']['title'] .= ' ['.$access_keys['save'].']';
         }
-        $fragment_button = new self(['buttons' => $button_params]);
+        $fragment_button = new rex_fragment([
+            'buttons' => $button_params
+        ]);
 
-        $fragment_modal = new self([
-            'modal_id' => 'article-add-'.$this->edit_id,
-            'modal_url' => $this->context->getUrl($this->url_params),
+        $fragment_modal = new rex_fragment([
+            'modal_id' => 'article-add-'.$category_id,
+            'modal_url' => $this->getVar('context')->getUrl(),
             'modal_title' => rex_i18n::msg('article_add'),
             'modal_body' => '
                 <input type="hidden" name="rex-api-call" value="article_add" />
@@ -106,7 +117,7 @@ class rex_structure_article_add extends rex_fragment
                         </dl>
                         <dl class="rex-form-group form-group">
                             <dt><label for="article-position">'.rex_i18n::msg('header_priority').'</label></dt>
-                            <dd><input id="article-position" class="form-control" type="text" name="article-position" value="'.($this->pager->getRowCount() + 1).'" /></dd>
+                            <dd><input id="article-position" class="form-control" type="text" name="article-position" value="'.($this->getPagerRows() + 1).'" /></dd>
                         </dl>
                     </div>
                 </div>
@@ -114,6 +125,6 @@ class rex_structure_article_add extends rex_fragment
             'modal_button' => $fragment_button->parse('core/buttons/button.php'),
         ]);
 
-        return $fragment_modal->parse('structure/modal.php');
+        return $fragment_modal->parse('structure/structure_action_modal.php');
     }
 }

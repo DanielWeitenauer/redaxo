@@ -2,30 +2,45 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_move extends rex_fragment
+class rex_structure_article_move extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        $article = rex_article::get($this->edit_id);
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
         $article_id = $article->getId();
         $category_id = $article->getCategoryId();
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
 
         if ($article->isStartArticle() || !rex::getUser()->hasPerm('moveArticle[]') || $category_id == $article_id) {
             return '';
         }
 
-        $url_params = array_merge($this->url_params, [
-            'form_article_move' => $this->edit_id,
+        $url_params = array_merge($this->getVar('url_params'), [
+            'form_article_move' => $article_id,
         ]);
 
-        $return = '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default" title="'.rex_i18n::msg('content_submitmovearticle').'"><i class="rex-icon fa-cut"></i></a>';
+        $button_params = [
+            'label' => rex_i18n::msg('content_submitmovearticle'),
+            'icon' => 'rex-icon fa-cut',
+            'url' => $context->getUrl($url_params, false),
+            'attributes' => [
+                'class' => [
+                    'btn btn-default',
+                ],
+            ],
+        ];
+
+        $return = $this->getButtonFragment($button_params);
 
         // Display form if necessary
-        if (rex_request('form_article_move', 'int', -1) == $this->edit_id) {
-            echo $this->getModal();
+        if (rex_request('form_article_move', 'int', -1) == $article_id) {
+            $return .= $this->getModal();
         }
 
         return $return;
@@ -36,10 +51,13 @@ class rex_structure_article_move extends rex_fragment
      */
     protected function getModal()
     {
-        $article = rex_article::get($this->edit_id);
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
         $article_id = $article->getId();
         $category_id = $article->getCategoryId();
         $user = rex::getUser();
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
 
         if ($article->isStartArticle() || !$user->hasPerm('moveArticle[]') || $category_id == $article_id) {
             return '';
@@ -53,9 +71,9 @@ class rex_structure_article_move extends rex_fragment
         $category_select->setSelected($category_id);
 
         return '  
-            <div class="modal fade" id="article-move-'.$this->edit_id.'">
+            <div class="modal fade" id="article-move-'.$article_id.'">
                 <div class="modal-dialog">
-                    <form id="rex-form-content-article-move-'.$this->edit_id.'" class="modal-content form-vertical" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
+                    <form id="rex-form-content-article-move-'.$article_id.'" class="modal-content form-vertical" action="'.$context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             <h3 class="modal-title">'.rex_i18n::msg('content_submitmovearticle').'</h3>
@@ -81,7 +99,7 @@ class rex_structure_article_move extends rex_fragment
             </div> 
             <script>
                 $(document).ready(function() {
-                    $("#article-move-'.$this->edit_id.'").modal();
+                    $("#article-move-'.$article_id.'").modal();
                 });
             </script>        
         ';

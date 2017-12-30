@@ -2,16 +2,24 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_update_user extends rex_fragment
+class rex_structure_article_update_user extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        $article = rex_article::get($this->edit_id);
-        $user = $article->getValue('updateuser');
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
 
-        return '<span>'.htmlspecialchars($user).'</span>';
+        $button_params = [
+            'label' => htmlspecialchars($article->getValue('updateuser')),
+            'attributes' => [
+                'data-title' => rex_i18n::msg('header_update_user'),
+            ],
+        ];
+
+        return $this->getButtonFragment($button_params);
     }
 }

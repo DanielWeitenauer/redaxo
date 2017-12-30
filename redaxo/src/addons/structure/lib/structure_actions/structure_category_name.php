@@ -2,23 +2,33 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_category_name extends rex_fragment
+class rex_structure_category_name extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (!$this->edit_id) {
-            return '&nbsp;';
+        $category_id = $this->getVar('edit_id');
+
+        $button_params = [
+            'label' => htmlspecialchars($this->getVar('sql')->getValue('name')),
+            'attributes' => [
+                'class' => [
+                    'btn',
+                ],
+            ],
+        ];
+
+        // Edit link
+        if (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            $url_params = array_merge($this->getVar('url_params'), [
+                'category_id' => $category_id,
+            ]);
+            $button_params['url'] = $this->getVar('context')->getUrl($url_params, false);
         }
 
-        $category_name = rex_category::get($this->edit_id)->getName();
-
-        $url_params = array_merge($this->url_params, [
-            'category_id' => $this->edit_id,
-        ]);
-
-        return '<a href="'.$this->context->getUrl($url_params).'">'.htmlspecialchars($category_name).'</a>';
+        return $this->getButtonFragment($button_params);
     }
 }

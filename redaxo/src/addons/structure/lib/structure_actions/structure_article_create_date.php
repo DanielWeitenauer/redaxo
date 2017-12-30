@@ -2,16 +2,25 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article_create_date extends rex_fragment
+class rex_structure_article_create_date extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        $article = rex_article::get($this->edit_id);
-        $create_date = $article->getValue('createdate');
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
+        $date = $article->getValue('createdate');
 
-        return '<span data-title="'.rex_i18n::msg('header_date').'">'.rex_formatter::strftime($create_date, 'datetime').'</span>';
+        $button_params = [
+            'label' => rex_formatter::strftime($date, 'datetime'),
+            'attributes' => [
+                'data-title' => rex_i18n::msg('header_date'),
+            ],
+        ];
+
+        return $this->getButtonFragment($button_params);
     }
 }

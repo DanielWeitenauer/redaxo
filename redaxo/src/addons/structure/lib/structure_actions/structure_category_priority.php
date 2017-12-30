@@ -2,19 +2,24 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_category_priority extends rex_fragment
+class rex_structure_category_priority extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (!$this->edit_id) {
-            return '';
-        }
+        $button_params = [
+            'label' => htmlspecialchars($this->getVar('sql')->getValue('catpriority')),
+            'attributes' => [
+                'class' => [
+                    'btn',
+                ],
+                'data-title' => rex_i18n::msg('header_priority'),
+            ],
+        ];
 
-        $category_priority = rex_category::get($this->edit_id)->getPriority();
-
-        return '<span class="btn" data-title="'.rex_i18n::msg('header_priority').'">'.htmlspecialchars($category_priority).'</span>';
+        return $this->getButtonFragment($button_params);
     }
 }

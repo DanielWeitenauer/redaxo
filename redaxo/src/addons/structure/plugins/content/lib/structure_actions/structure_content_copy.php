@@ -2,23 +2,27 @@
 /**
  * @package redaxo\structure\content
  */
-class rex_structure_content_copy extends rex_fragment
+class rex_structure_content_copy extends rex_structure_action_field
 {
     /**
      * @return string
      */
     public function get()
     {
+        $article_id = $this->getVar('edit_id');
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
+
         // Display form if necessary
-        if (rex_request('form_content_copy', 'int', -1) == $this->edit_id) {
+        if (rex_request('form_content_copy', 'int', -1) == $article_id) {
             echo $this->getModal();
         }
 
-        $url_params = array_merge($this->url_params, [
-            'form_content_copy' => $this->edit_id,
+        $url_params = array_merge($this->getVar('url_params'), [
+            'form_content_copy' => $article_id,
         ]);
 
-        return '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default">'.rex_i18n::msg('content_submitcopycontent').'</a>';
+        return '<a href="'.$context->getUrl($url_params).'" class="btn btn-default">'.rex_i18n::msg('content_submitcopycontent').'</a>';
     }
 
     /**
@@ -26,6 +30,9 @@ class rex_structure_content_copy extends rex_fragment
      */
     public function getModal()
     {
+        $article_id = $this->getVar('edit_id');
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
         $user = rex::getUser();
         $clang_perm = $user->getComplexPerm('clang')->getClangs();
 
@@ -58,16 +65,16 @@ class rex_structure_content_copy extends rex_fragment
         $lang_b->setSelected(rex_request('clang_b', 'int', null));
 
         return '  
-            <div class="modal fade" id="content-copy-'.$this->edit_id.'">
+            <div class="modal fade" id="content-copy-'.$article_id.'">
                 <div class="modal-dialog">
-                    <form id="rex-form-content-content-copy" class="modal-content form-horizontal" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
+                    <form id="rex-form-content-content-copy" class="modal-content form-horizontal" action="'.$context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             <h3 class="modal-title">'.rex_i18n::msg('content_submitcopycontent').'</h3>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="rex-api-call" value="content_copy" />
-                            <input type="hidden" name="article_id" value="'.$this->edit_id.'" />
+                            <input type="hidden" name="article_id" value="'.$article_id.'" />
                             <input type="hidden" name="slice_revision" value="'.$slice_revision.'" />
                             <dl class="dl-horizontal text-left">
                                 <dt><label for="clang_a">'.rex_i18n::msg('content_contentoflang').'</label></dt>
@@ -87,7 +94,7 @@ class rex_structure_content_copy extends rex_fragment
             </div> 
             <script>
                 $(document).ready(function() {
-                    $("#content-copy-'.$this->edit_id.'").modal();
+                    $("#content-copy-'.$article_id.'").modal();
                 });
             </script>        
         ';

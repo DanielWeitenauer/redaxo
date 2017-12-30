@@ -2,32 +2,43 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_category_move extends rex_fragment
+class rex_structure_category_move extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        if (!$this->edit_id) {
-            return '';
-        }
-
-        $article = rex_article::get($this->edit_id);
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
         $user = rex::getUser();
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
 
-        if (!$article->isStartArticle() || !$user->hasPerm('moveCategory[]') || !$user->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
+        if (!$article->isStartArticle() || !$user->hasPerm('moveCategory[]') || !$user->getComplexPerm('structure')->hasCategoryPerm($article_id)) {
             return '';
         }
 
-        $url_params = array_merge($this->url_params, [
-            'form_category_move' => $this->edit_id,
+        $url_params = array_merge($this->getVar('url_params'), [
+            'form_category_move' => $article_id,
         ]);
 
-        $return = '<a href="'.$this->context->getUrl($url_params).'" class="btn btn-default" title="'.rex_i18n::msg('content_submitmovecategory').'"><i class="rex-icon fa-cut"></i></a>';
+        $button_params = [
+            'label' => rex_i18n::msg('content_submitmovecategory'),
+            'icon' => 'rex-icon fa-cut',
+            'url' => $context->getUrl($url_params, false),
+            'attributes' => [
+                'class' => [
+                    'btn btn-default',
+                ],
+            ],
+        ];
+
+        $return = $this->getButtonFragment($button_params);
 
         // Display form if necessary
-        if (rex_request('form_category_move', 'int', -1) == $this->edit_id) {
+        if (rex_request('form_category_move', 'int', -1) == $article_id) {
             $return .= $this->getModal();
         }
 
@@ -39,10 +50,13 @@ class rex_structure_category_move extends rex_fragment
      */
     protected function getModal()
     {
-        $article = rex_article::get($this->edit_id);
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
         $user = rex::getUser();
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
 
-        if (!$article->isStartArticle() || !$user->hasPerm('moveCategory[]') || !$user->getComplexPerm('structure')->hasCategoryPerm($this->edit_id)) {
+        if (!$article->isStartArticle() || !$user->hasPerm('moveCategory[]') || !$user->getComplexPerm('structure')->hasCategoryPerm($article_id)) {
             return '';
         }
 
@@ -51,19 +65,19 @@ class rex_structure_category_move extends rex_fragment
         $category_select->setName('category_id_new');
         $category_select->setSize('1');
         $category_select->setAttribute('class', 'form-control');
-        $category_select->setSelected($this->edit_id);
+        $category_select->setSelected($article_id);
 
         return '  
-            <div class="modal fade" id="category-move-'.$this->edit_id.'">
+            <div class="modal fade" id="category-move-'.$article_id.'">
                 <div class="modal-dialog">
-                    <form id="rex-form-category-move-'.$this->edit_id.'" class="modal-content form-vertical" action="'.$this->context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
+                    <form id="rex-form-category-move-'.$article_id.'" class="modal-content form-vertical" action="'.$context->getUrl().'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             <h3 class="modal-title">'.rex_i18n::msg('content_submitmovecategory').'</h3>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="rex-api-call" value="category_move" />
-                            <input type="hidden" name="category_id" value="'.$this->edit_id.'" />
+                            <input type="hidden" name="category_id" value="'.$article_id.'" />
                             <div class="row">
                                 <div class="col-xs-12">
                                    <dl class="rex-form-group form-group">
@@ -82,7 +96,7 @@ class rex_structure_category_move extends rex_fragment
             </div> 
             <script>
                 $(document).ready(function() {
-                    $("#category-move-'.$this->edit_id.'").modal();
+                    $("#category-move-'.$article_id.'").modal();
                 });
             </script>        
         ';

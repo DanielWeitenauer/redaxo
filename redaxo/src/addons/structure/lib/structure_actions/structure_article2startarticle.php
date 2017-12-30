@@ -2,43 +2,44 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_article2startarticle extends rex_fragment
+class rex_structure_article2startarticle extends rex_structure_action_field
 {
     /**
      * @return string
+     * @throws rex_exception
      */
     public function get()
     {
-        $article = rex_article::get($this->edit_id);
+        $article_id = $this->getVar('edit_id');
+        $article = rex_article::get($article_id);
+        $user = rex::getUser();
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
 
         // User has no permission or article is in root
-        if ($article->isStartArticle() || !rex::getUser()->hasPerm('article2startarticle[]') || !$article->getParentId()) {
+        if ($article->isStartArticle() || !$article->getParentId() || !$user->hasPerm('article2startarticle[]')) {
             return '';
         }
 
-        $url_params = array_merge($this->url_params, [
+        $url_params = array_merge($this->getVar('url_params'), [
             'rex-api-call' => 'article2startarticle',
-            'category_id' => $this->edit_id, // As the active category id also changes, set new target
-            'article_id' => $this->edit_id,
+            'category_id' => $article_id, // As the active category id also changes, set new target
+            'article_id' => $article_id,
         ]);
 
         $button_params = [
-            'button' => [
-                'hidden_label' => rex_i18n::msg('content_tostartarticle'),
-                'icon' => 'startarticle',
-                'url' => $this->context->getUrl($url_params, false),
-                'attributes' => [
-                    'class' => [
-                        'btn-default',
-                    ],
-                    'title' => rex_i18n::msg('content_tostartarticle'),
-                    'data-confirm' => rex_i18n::msg('content_tostartarticle').'?',
+            'label' => rex_i18n::msg('content_tostartarticle'),
+            'icon' => 'rex-icon rex-icon-startarticle',
+            'url' => $context->getUrl($url_params, false),
+            'attributes' => [
+                'class' => [
+                    'btn btn-default',
                 ],
-            ]
+                'title' => rex_i18n::msg('content_tostartarticle'),
+                'data-confirm' => rex_i18n::msg('content_tostartarticle').'?',
+            ],
         ];
 
-        $this->setVar('buttons', $button_params);
-
-        return $this->parse('core/buttons/button.php');
+        return $this->getButtonFragment($button_params);
     }
 }
