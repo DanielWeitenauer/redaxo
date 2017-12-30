@@ -6,8 +6,14 @@
 
 abstract class rex_structure_action_field
 {
+    /**
+     * Traits
+     */
     use rex_structure_trait_vars;
 
+    /**
+     * @param array $vars
+     */
     public function __construct($vars = [])
     {
         $this->setVars($vars);
