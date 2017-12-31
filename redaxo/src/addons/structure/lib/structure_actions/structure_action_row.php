@@ -1,9 +1,9 @@
 <?php
 /**
- * @author Daniel Weitenauer
- * @copyright (c) 2017 studio ahoi
+ * This class represents a structure action row. Usually only one needed
+ * is needed for every structure table.
+ * A Structure action row can contain multiple structure action columns.
  */
-
 class rex_structure_action_row
 {
     /**

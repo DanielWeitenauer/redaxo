@@ -1,9 +1,14 @@
 <?php
 /**
- * @author Daniel Weitenauer
- * @copyright (c) 2017 studio ahoi
+ * This class represents a single structure action column.
+ * Structure action columns can contain multiple structure action fields
+ * and an optional header.
+ * Multiple structure action columns can be added to a structure action row.
+ *
+ * @see rex_structure_action_field
+ * @see rex_structure_action_row
+ * @package redaxo\structure
  */
-
 class rex_structure_action_column
 {
     /**
