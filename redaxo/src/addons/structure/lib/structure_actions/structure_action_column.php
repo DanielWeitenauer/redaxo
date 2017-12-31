@@ -6,8 +6,10 @@
 
 class rex_structure_action_column
 {
+    /**
+     * Traits
+     */
     use rex_structure_trait_vars;
-
     /**
      * @var rex_structure_action_field
      */
@@ -18,10 +20,11 @@ class rex_structure_action_column
     protected $fields = [];
 
     /**
-     * rex_structure_action_column constructor.
+     * @param array $vars
      */
-    public function __construct()
+    public function __construct($vars = [])
     {
+        $this->setVars($vars);
     }
 
     /**
