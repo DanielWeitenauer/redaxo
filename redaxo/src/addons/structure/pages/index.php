@@ -163,19 +163,31 @@ do {
     // this way all action classes and fragments can use the same variable names
     $category_action_vars['edit_id'] = $i_category_id;
 
-    $category_row->getColumn('icon')
-        ->setField('category_icon', new rex_structure_category_icon($category_action_vars));
-    $category_row->getColumn('id')
-        ->setField('category_id', new rex_structure_category_id($category_action_vars));
-    $category_row->getColumn('category')
-        ->setField('category_name', new rex_structure_category_name($category_action_vars));
-    $category_row->getColumn('priority')
-        ->setField('category_priority', new rex_structure_category_priority($category_action_vars));
-    $category_row->getColumn('status')
-        ->setField('category_status', new rex_structure_category_status($category_action_vars));
-    $category_row->getColumn('action')
-        ->setField('category_edit', new rex_structure_category_edit($category_action_vars))
-        ->setField('category_delete', new rex_structure_category_delete($category_action_vars));
+    if ($category_row->hasColumn('icon')) {
+        $category_row->getColumn('icon')
+             ->setField('category_icon', new rex_structure_category_icon($category_action_vars));
+    }
+    if ($category_row->hasColumn('id')) {
+        $category_row->getColumn('id')
+            ->setField('category_id', new rex_structure_category_id($category_action_vars));
+    }
+    if ($category_row->hasColumn('category')) {
+        $category_row->getColumn('category')
+            ->setField('category_name', new rex_structure_category_name($category_action_vars));
+    }
+    if ($category_row->hasColumn('priority')) {
+        $category_row->getColumn('priority')
+            ->setField('category_priority', new rex_structure_category_priority($category_action_vars));
+    }
+    if ($category_row->hasColumn('status')) {
+        $category_row->getColumn('status')
+            ->setField('category_status', new rex_structure_category_status($category_action_vars));
+    }
+    if ($category_row->hasColumn('action')) {
+        $category_row->getColumn('action')
+            ->setField('category_edit', new rex_structure_category_edit($category_action_vars))
+            ->setField('category_delete', new rex_structure_category_delete($category_action_vars));
+    }
 
     // EXTENSION POINT to manipulate $category_row
     $category_row = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_row, [
@@ -294,23 +306,39 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         // this way all action classes and fragments can use the same variable names
         $article_action_vars['edit_id'] = $sql->getValue('id');
 
-        $article_row->getColumn('icon')
-            ->setField('article_icon', new rex_structure_article_icon($article_action_vars));
-        $article_row->getColumn('id')
-            ->setField('article_id', new rex_structure_article_id($article_action_vars));
-        $article_row->getColumn('article')
-            ->setField('article_name', new rex_structure_article_name($article_action_vars));
-        $article_row->getColumn('template')
-            ->setField('article_template', new rex_structure_article_template($article_action_vars));
-        $article_row->getColumn('date')
-            ->setField('article_create_date', new rex_structure_article_create_date($article_action_vars));
-        $article_row->getColumn('priority')
-            ->setField('article_priority', new rex_structure_article_priority($article_action_vars));
-        $article_row->getColumn('status')
-            ->setField('article_status', new rex_structure_article_status($article_action_vars));
-        $article_row->getColumn('action')
-            ->setField('article_edit', new rex_structure_article_edit($article_action_vars))
-            ->setField('article_delete', new rex_structure_article_delete($article_action_vars));
+        if ($article_row->hasColumn('icon')) {
+                $article_row->getColumn('icon')
+                    ->setField('article_icon', new rex_structure_article_icon($article_action_vars));
+        }
+        if ($article_row->hasColumn('id')) {
+            $article_row->getColumn('id')
+                ->setField('article_id', new rex_structure_article_id($article_action_vars));
+        }
+        if ($article_row->hasColumn('article')) {
+            $article_row->getColumn('article')
+                ->setField('article_name', new rex_structure_article_name($article_action_vars));
+        }
+        if ($article_row->hasColumn('template')) {
+            $article_row->getColumn('template')
+                ->setField('article_template', new rex_structure_article_template($article_action_vars));
+        }
+        if ($article_row->hasColumn('date')) {
+            $article_row->getColumn('date')
+                ->setField('article_create_date', new rex_structure_article_create_date($article_action_vars));
+        }
+        if ($article_row->hasColumn('priority')) {
+            $article_row->getColumn('priority')
+                ->setField('article_priority', new rex_structure_article_priority($article_action_vars));
+        }
+        if ($article_row->hasColumn('status')) {
+            $article_row->getColumn('status')
+                ->setField('article_status', new rex_structure_article_status($article_action_vars));
+        }
+        if ($article_row->hasColumn('action')) {
+            $article_row->getColumn('action')
+                ->setField('article_edit', new rex_structure_article_edit($article_action_vars))
+                ->setField('article_delete', new rex_structure_article_delete($article_action_vars));
+        }
 
         // EXTENSION POINT to manipulate $article_row
         $article_row = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_row, [
