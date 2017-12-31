@@ -4,7 +4,7 @@
  * @copyright (c) 2017 studio ahoi
  */
 
-class rex_structure_action_row implements ArrayAccess
+class rex_structure_action_row
 {
     /**
      * Traits
@@ -100,48 +100,5 @@ class rex_structure_action_row implements ArrayAccess
         $fragment->setVar('columns', $this->getColumns());
 
         return $fragment->parse($filename);
-    }
-
-    // ArrayAccess -----------------------------------------------------------------------------------------------------
-
-    /**
-     * @param mixed $column_name
-     *
-     * @return bool
-     */
-    public function offsetExists($column_name)
-    {
-        return $this->hasColumn($column_name);
-    }
-
-    /**
-     * @param mixed $column_name
-     *
-     * @return null|rex_structure_action_column
-     */
-    public function offsetGet($column_name)
-    {
-        return $this->getColumn($column_name);
-    }
-
-    /**
-     * @param string $column_name
-     * @param rex_structure_action_column $field
-     *
-     * @return rex_structure_action_row
-     */
-    public function offsetSet($column_name, $field)
-    {
-        return $this->setColumn($column_name, $field);
-    }
-
-    /**
-     * @param mixed $column_name
-     *
-     * @return rex_structure_action_row
-     */
-    public function offsetUnset($column_name)
-    {
-        return $this->unsetColumn($column_name);
     }
 }

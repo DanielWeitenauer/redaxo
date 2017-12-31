@@ -140,19 +140,21 @@ $category_action_vars = [
 
 // Predefine columns
 $category_row = new rex_structure_action_row($category_action_vars);
-$category_row['icon'] = new rex_structure_action_column();
-$category_row['id'] = new rex_structure_action_column();
-$category_row['category'] = new rex_structure_action_column();
-$category_row['priority'] = new rex_structure_action_column();
-$category_row['status'] = new rex_structure_action_column();
-$category_row['action'] = new rex_structure_action_column();
+$category_row
+    ->setColumn('icon', new rex_structure_action_column())
+    ->setColumn('id', new rex_structure_action_column())
+    ->setColumn('category', new rex_structure_action_column())
+    ->setColumn('priority', new rex_structure_action_column())
+    ->setColumn('status', new rex_structure_action_column())
+    ->setColumn('action', new rex_structure_action_column());
 
 // Add table head actions
 $category_row_icon = new rex_structure_category_add($category_action_vars);
 $category_row_icon
     ->setVar('hide_label', true)
     ->setVar('hide_border', true);
-$category_row['icon']->setHead($category_row_icon);
+$category_row->getColumn('icon')
+    ->setHead($category_row_icon);
 
 // Add table body actions and generate body output
 do {
@@ -161,17 +163,17 @@ do {
     // this way all action classes and fragments can use the same variable names
     $category_action_vars['edit_id'] = $i_category_id;
 
-    $category_row['icon']
+    $category_row->getColumn('icon')
         ->setField('category_icon', new rex_structure_category_icon($category_action_vars));
-    $category_row['id']
+    $category_row->getColumn('id')
         ->setField('category_id', new rex_structure_category_id($category_action_vars));
-    $category_row['category']
+    $category_row->getColumn('category')
         ->setField('category_name', new rex_structure_category_name($category_action_vars));
-    $category_row['priority']
+    $category_row->getColumn('priority')
         ->setField('category_priority', new rex_structure_category_priority($category_action_vars));
-    $category_row['status']
+    $category_row->getColumn('status')
         ->setField('category_status', new rex_structure_category_status($category_action_vars));
-    $category_row['action']
+    $category_row->getColumn('action')
         ->setField('category_edit', new rex_structure_category_edit($category_action_vars))
         ->setField('category_delete', new rex_structure_category_delete($category_action_vars));
 
@@ -268,21 +270,23 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
     // Predefine columns
     $article_row = new rex_structure_action_row($article_action_vars);
-    $article_row['icon'] = new rex_structure_action_column();
-    $article_row['id'] = new rex_structure_action_column();
-    $article_row['article'] = new rex_structure_action_column();
-    $article_row['template'] = new rex_structure_action_column();
-    $article_row['date'] = new rex_structure_action_column();
-    $article_row['priority'] = new rex_structure_action_column();
-    $article_row['status'] = new rex_structure_action_column();
-    $article_row['action'] = new rex_structure_action_column();
+    $article_row
+        ->setColumn('icon', new rex_structure_action_column())
+        ->setColumn('id', new rex_structure_action_column())
+        ->setColumn('article', new rex_structure_action_column())
+        ->setColumn('template', new rex_structure_action_column())
+        ->setColumn('date', new rex_structure_action_column())
+        ->setColumn('priority', new rex_structure_action_column())
+        ->setColumn('status', new rex_structure_action_column())
+        ->setColumn('action', new rex_structure_action_column());
 
     // Add table head actions
     $article_row_icon = new rex_structure_article_add($article_action_vars);
     $article_row_icon
         ->setVar('hide_label', true)
         ->setVar('hide_border', true);
-    $article_row['icon']->setHead($article_row_icon);
+    $article_row->getColumn('icon')
+        ->setHead($article_row_icon);
 
     // Add table body actions and generate body output
     do {
@@ -290,21 +294,21 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         // this way all action classes and fragments can use the same variable names
         $article_action_vars['edit_id'] = $sql->getValue('id');
 
-        $article_row['icon']
+        $article_row->getColumn('icon')
             ->setField('article_icon', new rex_structure_article_icon($article_action_vars));
-        $article_row['id']
+        $article_row->getColumn('id')
             ->setField('article_id', new rex_structure_article_id($article_action_vars));
-        $article_row['article']
+        $article_row->getColumn('article')
             ->setField('article_name', new rex_structure_article_name($article_action_vars));
-        $article_row['template']
+        $article_row->getColumn('template')
             ->setField('article_template', new rex_structure_article_template($article_action_vars));
-        $article_row['date']
+        $article_row->getColumn('date')
             ->setField('article_create_date', new rex_structure_article_create_date($article_action_vars));
-        $article_row['priority']
+        $article_row->getColumn('priority')
             ->setField('article_priority', new rex_structure_article_priority($article_action_vars));
-        $article_row['status']
+        $article_row->getColumn('status')
             ->setField('article_status', new rex_structure_article_status($article_action_vars));
-        $article_row['action']
+        $article_row->getColumn('action')
             ->setField('article_edit', new rex_structure_article_edit($article_action_vars))
             ->setField('article_delete', new rex_structure_article_delete($article_action_vars));
 
