@@ -22,41 +22,58 @@ rex_extension::register('PAGE_STRUCTURE_ARTICLE_ORDER', function (rex_extension_
     return $article_order;
 });
 
+rex_extension::register('PAGE_STRUCTURE_CATEGORY_ACTIONS', function (rex_extension_point $ep) {
+    /** @var rex_structure_action_row $category_row */
+    $category_row = $ep->getSubject();
+    $action_vars = $ep->getParam('action_vars');
+
+    $category_row->setColumn('type', new rex_structure_action_column($action_vars));
+    $category_row->getColumn('type')
+        ->setField('blog_mode', new rex_blog_mode_info($action_vars));
+
+    return $category_row;
+}, rex_extension::LATE);
+
 rex_extension::register('PAGE_STRUCTURE_ARTICLE_ACTIONS', function (rex_extension_point $ep) {
-    $article_actions = $ep->getSubject();
-    $action_params = $ep->getParam('action_params');
-    $article = rex_article::get($action_params['edit_id']);
+    /** @var rex_structure_action_row $article_row */
+    $article_row = $ep->getSubject();
+    $action_vars = $ep->getParam('action_vars');
+    $article = rex_article::get($action_vars['edit_id']);
 
     if ($article instanceof rex_article) {
         $category = $article->getCategory();
 
-        if ($category instanceof rex_category && $category->getValue('article_order')) {
-            unset($article_actions['prio']);
-            unset($article_actions['template']);
-            unset($article_actions['status']['article_edit']);
-            unset($article_actions['action']['article2startarticle']);
-            unset($article_actions['action']['article2category']);
+        if ($category instanceof rex_category && $category->getValue('article_order') != 'priority, name') {
+            // Remove unnecessary columns
+            $article_row
+                ->unsetColumn('prio')
+                ->unsetColumn('template')
+                ->unsetColumn('date');
 
-            $article_actions['create_date'] = $article_actions['date'];
-            unset($article_actions['date']);
-            $article_actions['update_date']['article_update_date'] = new rex_structure_article_update_date($action_params);
+            // Remove unnecessary fields
+            $article_row->getColumn('status')
+                ->unsetField('article_edit');
+            $article_row->getColumn('action')
+                ->unsetField('article2startarticle')
+                ->unsetField('article2category');
+
+            // Add createdate and updatedate and make them sortable
+            $article_row
+                ->setColumn('create_date', new rex_structure_action_column($action_vars))
+                ->getColumn('create_date')
+                ->setHead(new rex_blog_mode_article_header_createdate_sortable($action_vars))
+                ->setField('article_create_date', new rex_structure_article_create_date($action_vars));
+            $article_row
+                ->setColumn('update_date', new rex_structure_action_column($action_vars))
+                ->getColumn('update_date')
+                ->setHead(new rex_blog_mode_article_header_updatedate_sortable($action_vars))
+                ->setField('article_update_date', new rex_structure_article_update_date($action_vars));
+
+            // Make name sortable
+            $article_row->getColumn('article')
+                ->setHead(new rex_blog_mode_article_header_name_sortable($action_vars));
         }
     }
 
-    return $article_actions;
+    return $article_row;
 }, rex_extension::LATE);
-
-rex_extension::register('PAGE_STRUCTURE_ARTICLE_ACTIONS_HEADER', function (rex_extension_point $ep) {
-    $article_actions_header = $ep->getSubject();
-    $action_params_header = $ep->getParam('action_params_header');
-    $category = rex_category::get($action_params_header['edit_id']);
-
-    if ($category instanceof rex_category && $category->getValue('article_order')) {
-        $article_actions_header['article_name']['article_name'] = new rex_structure_article_header_name_sortable($action_params_header);
-        $article_actions_header['create_date']['article_create_date'] = new rex_structure_article_header_createdate_sortable($action_params_header);
-        $article_actions_header['update_date']['article_update_date'] = new rex_structure_article_header_updatedate_sortable($action_params_header);
-    }
-
-    return $article_actions_header;
-}, rex_extension::LATE);
-

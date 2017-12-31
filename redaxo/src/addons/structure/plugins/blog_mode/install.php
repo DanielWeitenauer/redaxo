@@ -11,7 +11,7 @@ rex_metainfo_add_field(
     '',
     3,
     '',
-    'priority, name|createdate DESC|createdate ASC|updatedate DESC|updatedate ASC|name ASC|name DESC',
+    'priority, name:kein Blog Mode|createdate DESC|createdate ASC|updatedate DESC|updatedate ASC|name ASC|name DESC',
     null,
     '',
     null
