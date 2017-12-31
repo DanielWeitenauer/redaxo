@@ -24,7 +24,7 @@ class rex_structure_article_status extends rex_structure_action_field
         $status_icon = $states[$status_index][2];
 
         $button_params = [
-            'label' => $status,
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => $status,
             'icon' => 'rex-icon '.$status_icon,
             'attributes' => [
                 'class' => [

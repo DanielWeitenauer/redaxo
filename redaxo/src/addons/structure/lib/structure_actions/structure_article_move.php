@@ -26,7 +26,7 @@ class rex_structure_article_move extends rex_structure_action_field
         ]);
 
         $button_params = [
-            'label' => rex_i18n::msg('content_submitmovearticle'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('content_submitmovearticle'),
             'icon' => 'rex-icon fa-cut',
             'url' => $context->getUrl($url_params, false),
             'attributes' => [

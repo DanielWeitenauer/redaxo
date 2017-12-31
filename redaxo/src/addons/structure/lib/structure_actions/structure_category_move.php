@@ -25,7 +25,7 @@ class rex_structure_category_move extends rex_structure_action_field
         ]);
 
         $button_params = [
-            'label' => rex_i18n::msg('content_submitmovecategory'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('content_submitmovecategory'),
             'icon' => 'rex-icon fa-cut',
             'url' => $context->getUrl($url_params, false),
             'attributes' => [

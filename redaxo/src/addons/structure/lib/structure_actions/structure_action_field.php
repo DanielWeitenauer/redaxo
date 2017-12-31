@@ -49,7 +49,7 @@ abstract class rex_structure_action_field
      */
     protected function getModalFragment()
     {
-        $fragment = new rex_fragment($this->vars);
+        $fragment = new rex_fragment($this->getVars());
 
         return $fragment->parse('structure/structure_action_modal.php');
     }

@@ -15,7 +15,7 @@ class rex_structure_article_edit extends rex_structure_action_field
         $context = $this->getVar('context');
 
         $button_params = [
-            'label' => rex_i18n::msg('edit'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('edit'),
             'icon' => 'rex-icon rex-icon-edit',
             'attributes' => [
                 'class' => [

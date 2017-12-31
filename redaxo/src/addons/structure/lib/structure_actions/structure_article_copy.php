@@ -25,7 +25,7 @@ class rex_structure_article_copy extends rex_structure_action_field
         ]);
 
         $button_params = [
-            'label' => rex_i18n::msg('copy_article'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('copy_article'),
             'icon' => 'rex-icon fa-copy',
             'url' => $context->getUrl($url_params, false),
             'attributes' => [

@@ -21,7 +21,7 @@ class rex_structure_article_add extends rex_structure_action_field
         ]);
 
         $button_params = [
-            'label' => rex_i18n::msg('article_add'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('article_add'),
             'icon' => 'rex-icon rex-icon-add-article',
             'url' => $this->getVar('context')->getUrl($url_params, false),
             'attributes' => [

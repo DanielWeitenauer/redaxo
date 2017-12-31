@@ -22,7 +22,7 @@ class rex_structure_category_status extends rex_structure_action_field
 
 
         $button_params = [
-            'label' => $status,
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => $status,
             'icon' => 'rex-icon '.$status_icon,
             'attributes' => [
                 'class' => [

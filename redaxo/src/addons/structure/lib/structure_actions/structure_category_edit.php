@@ -17,7 +17,7 @@ class rex_structure_category_edit extends rex_structure_action_field
         }
 
         $button_params = [
-            'label' => rex_i18n::msg('change'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('change'),
             'icon' => 'rex-icon rex-icon-edit',
             'attributes' => [
                 'class' => [

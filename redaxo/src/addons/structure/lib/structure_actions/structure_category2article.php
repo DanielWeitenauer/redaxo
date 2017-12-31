@@ -34,7 +34,7 @@ class rex_structure_category2Article extends rex_structure_action_field
         ]);
 
         $button_params = [
-            'label' => rex_i18n::msg('content_tocategory'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('content_tocategory'),
             'icon' => 'rex-icon rex-icon-article',
             'url' => $context->getUrl($url_params, false),
             'attributes' => [

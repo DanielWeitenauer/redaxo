@@ -21,7 +21,7 @@ class rex_structure_category_add extends rex_structure_action_field
         ]);
 
         $button_params = [
-            'label' => rex_i18n::msg('add_category'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('add_category'),
             'icon' => 'rex-icon rex-icon-add-category',
             'url' => $this->getVar('context')->getUrl($url_params, false),
             'attributes' => [

@@ -13,7 +13,7 @@ class rex_structure_category_delete extends rex_structure_action_field
         $category_id = $this->getVar('edit_id');
 
         $button_params = [
-            'label' => rex_i18n::msg('delete'),
+            $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => rex_i18n::msg('delete'),
             'icon' => 'rex-icon rex-icon-delete',
             'attributes' => [
                 'class' => [
