@@ -25,4 +25,12 @@ class rex_structure_article_priority extends rex_structure_action_field
 
         return $this->getButtonFragment($button_params);
     }
+
+    /**
+     * @return string
+     */
+    public function getModal()
+    {
+        return '';
+    }
 }

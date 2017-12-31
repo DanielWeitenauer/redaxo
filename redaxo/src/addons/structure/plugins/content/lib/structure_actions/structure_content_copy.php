@@ -13,11 +13,6 @@ class rex_structure_content_copy extends rex_structure_action_field
         /** @var rex_context $context */
         $context = $this->getVar('context');
 
-        // Display form if necessary
-        if (rex_request('form_content_copy', 'int', -1) == $article_id) {
-            echo $this->getModal();
-        }
-
         $url_params = array_merge($this->getVar('url_params'), [
             'form_content_copy' => $article_id,
         ]);
@@ -35,12 +30,15 @@ class rex_structure_content_copy extends rex_structure_action_field
         $context = $this->getVar('context');
         $user = rex::getUser();
         $clang_perm = $user->getComplexPerm('clang')->getClangs();
+        $slice_revision = 0;
 
         if (!$user->hasPerm('copyContent[]') || $clang_perm <= 1) {
             return '';
         }
-
-        $slice_revision = 0;
+        // Display form only if requested
+        if (rex_request('form_content_copy', 'int', -1) != $article_id) {
+            return '';
+        }
 
         $lang_a = new rex_select();
         $lang_a->setId('clang_a');

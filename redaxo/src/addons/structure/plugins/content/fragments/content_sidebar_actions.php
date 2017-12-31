@@ -13,10 +13,10 @@ foreach ($this->columns as $column_key => $column) {
         /** @var rex_structure_action_field $field */
         foreach ($column->getFields() as $field_key => $field) {
             if (rex_i18n::hasMsg($field_key)) {
-                $output_item .= '<dt>'.rex_i18n::msg($field_key).'</dt><dd>'.$field->get().'</dd>';
+                $output_item .= '<dt>'.rex_i18n::msg($field_key).'</dt><dd>'.$field->get().$field->getModal().'</dd>';
                 $is_horizontal = true;
             } else {
-                $output_item .= $field->get();
+                $output_item .= $field->get().$field->getModal();
             }
         }
     }

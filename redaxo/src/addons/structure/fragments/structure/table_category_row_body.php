@@ -10,13 +10,12 @@ foreach ($this->columns as $column_key => $column) {
     $output_item = '';
 
     if ($column->hasFields()) {
+        /** @var rex_structure_action_field $field */
         foreach ($column->getFields() as $field_key => $field) {
-            if ($field instanceof rex_structure_action_field) {
-                if (rex_i18n::hasMsg($field_key)) {
-                    $output_item .= '<dt>'.rex_i18n::msg($field_key).'</dt><dd>'.$field->get().'</dd>';
-                } else {
-                    $output_item .= $field->get();
-                }
+            if (rex_i18n::hasMsg($field_key)) {
+                $output_item .= '<dt>'.rex_i18n::msg($field_key).'</dt><dd>'.$field->get().'</dd>';
+            } else {
+                $output_item .= $field->get();
             }
         }
     }
@@ -36,5 +35,9 @@ foreach ($this->columns as $column_key => $column) {
         <td class="rex-table-<?=rex_string::normalize($output_key, '-');?>" data-title="<?=rex_i18n::msg('header_'.$output_key);?>">
             <?=$output_item;?>
         </td>
+    <?php endforeach; ?>
+
+    <?php foreach ($column->getFields() as $field):  /** @var rex_structure_action_field $field */ ?>
+        <?= $field->getModal(); ?>
     <?php endforeach; ?>
 </tr>

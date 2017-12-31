@@ -12,6 +12,10 @@
                     <?= $field->get(); ?>
                 <?php endforeach; ?>
             </div>
+
+            <?php foreach ($column->getFields() as $field):  /** @var rex_structure_action_field $field */ ?>
+                <?= $field->getModal(); ?>
+            <?php endforeach; ?>
         </td>
     <?php endforeach; ?>
 </tr>

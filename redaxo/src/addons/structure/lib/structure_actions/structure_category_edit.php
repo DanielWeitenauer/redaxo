@@ -36,25 +36,22 @@ class rex_structure_category_edit extends rex_structure_action_field
             $button_params['attributes']['class'][] = 'btn-default';
         }
 
-        $return = $this->getButtonFragment($button_params);
-
-        // Display form if necessary
-        if (rex_request('form_category_edit', 'int', -1) == $category_id) {
-            $return .= $this->getModal();
-        }
-
-        return $return;
+        return $this->getButtonFragment($button_params);
     }
 
     /**
      * @return string
      * @throws rex_sql_exception
      */
-    protected function getModal()
+    public function getModal()
     {
         $category_id = $this->getVar('edit_id');
 
         if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            return '';
+        }
+        // Display form only if requested
+        if (rex_request('form_category_edit', 'int', -1) != $category_id) {
             return '';
         }
 

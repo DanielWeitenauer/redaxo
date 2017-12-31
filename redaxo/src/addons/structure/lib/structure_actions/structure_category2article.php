@@ -48,4 +48,12 @@ class rex_structure_category2Article extends rex_structure_action_field
 
         return $this->getButtonFragment($button_params);
     }
+
+    /**
+     * @return string
+     */
+    public function getModal()
+    {
+        return '';
+    }
 }

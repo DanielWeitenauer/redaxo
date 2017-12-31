@@ -33,6 +33,14 @@ class rex_structure_article_template extends rex_structure_action_field
     }
 
     /**
+     * @return string
+     */
+    public function getModal()
+    {
+        return '';
+    }
+
+    /**
      * @param int $category_id
      * @return array
      */

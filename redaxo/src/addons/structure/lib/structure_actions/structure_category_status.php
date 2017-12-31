@@ -46,4 +46,12 @@ class rex_structure_category_status extends rex_structure_action_field
 
         return $this->getButtonFragment($button_params);
     }
+
+    /**
+     * @return string
+     */
+    public function getModal()
+    {
+        return '';
+    }
 }

@@ -38,26 +38,23 @@ class rex_structure_category_add extends rex_structure_action_field
             $button_params['attributes']['title'] .= ' ['.$access_keys['add'].']';
         }
 
-        $return = $this->getButtonFragment($button_params);
-
-        // Show form if necessary
-        if (rex_request('form_article_add', 'int', -1) == $category_id) {
-            $return .= $this->getModal();
-        }
-
-        return $return;
+        return $this->getButtonFragment($button_params);
     }
 
     /**
      * @return string
      */
-    protected function getModal()
+    public function getModal()
     {
         $category_id = $this->getVar('edit_id');
         $clang = $this->getVar('clang');
-        $data_colspan = 5; // Only for BC reasons
+        $data_colspan = 5; // Only for bc reasons
 
         if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            return '';
+        }
+        // Show form if only if requested
+        if (rex_request('form_article_add', 'int', -1) != $category_id) {
             return '';
         }
 

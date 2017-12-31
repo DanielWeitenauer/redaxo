@@ -33,10 +33,7 @@ abstract class rex_structure_action_field
      * @return string
      * @throws rex_exception
      */
-    public function get()
-    {
-        throw new rex_exception('Method get() is yet to be implemeted!');
-    }
+    abstract public function get();
 
     /**
      * This method should implement the generation and return of a bootstrap
@@ -46,10 +43,7 @@ abstract class rex_structure_action_field
      * @return string
      * @throws rex_exception
      */
-    public function getModal()
-    {
-        throw new rex_exception('Method getModal() is yet to be implemeted!');
-    }
+    abstract public function getModal();
 
     /**
      * @param array $button_params

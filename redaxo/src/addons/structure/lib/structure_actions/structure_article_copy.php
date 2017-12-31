@@ -35,27 +35,25 @@ class rex_structure_article_copy extends rex_structure_action_field
             ],
         ];
 
-        $return = $this->getButtonFragment($button_params);
-
-        // Show form if necessary
-        if (rex_request('form_article_copy', 'int', -1) == $article_id) {
-            $return .= $this->getModal();
-        }
-
-        return $return;
+        return $this->getButtonFragment($button_params);
     }
 
     /**
      * @return string
      * @throws rex_exception
      */
-    protected function getModal()
+    public function getModal()
     {
         $article_id = $this->getVar('edit_id');
         $article = rex_article::get($article_id);
         $category_id = $article->getCategoryId();
         /** @var rex_context $context */
         $context = $this->getVar('context');
+
+        // Show form only if requested
+        if (rex_request('form_article_copy', 'int', -1) != $article_id) {
+            return '';
+        }
 
         $category_select = new rex_category_select(false, false, true, !rex::getUser()->getComplexPerm('structure')->hasMountPoints());
         $category_select->setName('category_copy_id_new');

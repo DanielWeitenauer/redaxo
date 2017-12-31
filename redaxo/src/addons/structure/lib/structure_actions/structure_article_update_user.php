@@ -22,4 +22,12 @@ class rex_structure_article_update_user extends rex_structure_action_field
 
         return $this->getButtonFragment($button_params);
     }
+
+    /**
+     * @return string
+     */
+    public function getModal()
+    {
+        return '';
+    }
 }

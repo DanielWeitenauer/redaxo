@@ -36,20 +36,13 @@ class rex_structure_article_move extends rex_structure_action_field
             ],
         ];
 
-        $return = $this->getButtonFragment($button_params);
-
-        // Display form if necessary
-        if (rex_request('form_article_move', 'int', -1) == $article_id) {
-            $return .= $this->getModal();
-        }
-
-        return $return;
+        return $this->getButtonFragment($button_params);
     }
 
     /**
      * @return string
      */
-    protected function getModal()
+    public function getModal()
     {
         $article_id = $this->getVar('edit_id');
         $article = rex_article::get($article_id);
@@ -60,6 +53,10 @@ class rex_structure_article_move extends rex_structure_action_field
         $context = $this->getVar('context');
 
         if ($article->isStartArticle() || !$user->hasPerm('moveArticle[]') || $category_id == $article_id) {
+            return '';
+        }
+        // Display form only if requested
+        if (rex_request('form_article_move', 'int', -1) != $article_id) {
             return '';
         }
 
