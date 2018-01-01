@@ -23,8 +23,7 @@ class rex_blog_mode_info extends rex_structure_action_field
             'label' => $type,
             'attributes' => [
                 'class' => [
-                    'btn',
-                    'structure-blog-mode-info',
+                    'btn btn-no-pad',
                 ],
             ],
         ];

@@ -21,7 +21,7 @@ class rex_structure_article_name extends rex_structure_action_field
             'label' => htmlspecialchars($sql->getValue('name')),
             'attributes' => [
                 'class' => [
-                    'btn',
+                    'btn btn-no-pad',
                 ],
             ],
         ];

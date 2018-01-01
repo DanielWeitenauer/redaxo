@@ -16,7 +16,7 @@ class rex_structure_category_name extends rex_structure_action_field
             'label' => htmlspecialchars($this->getVar('sql')->getValue('name')),
             'attributes' => [
                 'class' => [
-                    'btn',
+                    'btn btn-no-pad',
                 ],
             ],
         ];

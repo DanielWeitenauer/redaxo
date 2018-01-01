@@ -36,6 +36,9 @@ if (rex_request('article_id', 'int') == 0) {
 
 if (rex::isBackend() && rex::getUser()) {
     rex_view::addJsFile($this->getAssetsUrl('linkmap.js'));
+    if (rex_be_controller::getCurrentPagePart(1) == 'structure') {
+        rex_view::addCssFile($this->getAssetsUrl('fix_be_styles.css'));
+    }
 
     rex_extension::register('PAGE_SIDEBAR', function () {
         $category_id = rex_request('category_id', 'int');
