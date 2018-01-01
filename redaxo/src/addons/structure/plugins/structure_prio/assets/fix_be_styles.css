@@ -1,0 +1,6 @@
+.table th.rex-table-id,
+.table td.rex-table-id,
+.table th.rex-table-priority,
+.table td.rex-table-priority {
+    width: auto;
+}
