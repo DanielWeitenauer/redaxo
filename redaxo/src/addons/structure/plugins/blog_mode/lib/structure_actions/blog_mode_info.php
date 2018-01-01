@@ -31,4 +31,9 @@ class rex_blog_mode_info extends rex_structure_action_field
 
         return $this->getButtonFragment($button_params);
     }
+
+    public function getModal()
+    {
+        return '';
+    }
 }

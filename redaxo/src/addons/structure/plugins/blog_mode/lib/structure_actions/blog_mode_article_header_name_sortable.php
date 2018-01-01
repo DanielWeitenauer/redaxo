@@ -28,4 +28,9 @@ class rex_blog_mode_article_header_name_sortable extends rex_structure_action_fi
 
         return $return;
     }
+
+    public function getModal()
+    {
+        return '';
+    }
 }

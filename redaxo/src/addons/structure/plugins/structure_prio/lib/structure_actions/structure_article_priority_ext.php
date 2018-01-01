@@ -39,21 +39,14 @@ class rex_structure_article_priority_ext extends rex_structure_action_field
             $button_params['attributes']['class'][] = 'btn-default';
         }
 
-        $return = $this->getButtonFragment($button_params);
-
-        // Display form if necessary
-        if (rex_request('form_article_priority', 'int', -1) == $article_id) {
-            $return .= $this->getModal();
-        }
-
-        return $return;
+        return $this->getButtonFragment($button_params);
     }
 
     /**
      * @return string
      * @throws rex_exception
      */
-    protected function getModal()
+    public function getModal()
     {
         $article_id = $this->getVar('edit_id');
         $article = rex_article::get($article_id);
@@ -62,6 +55,11 @@ class rex_structure_article_priority_ext extends rex_structure_action_field
         $context = $this->getVar('context');
 
         if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+            return '';
+        }
+
+        // Display form only if requested
+        if (rex_request('form_article_priority', 'int', -1) != $article_id) {
             return '';
         }
 

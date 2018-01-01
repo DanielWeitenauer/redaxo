@@ -28,4 +28,9 @@ class rex_blog_mode_article_header_createdate_sortable extends rex_structure_act
 
         return $return;
     }
+
+    public function getModal()
+    {
+        return '';
+    }
 }
