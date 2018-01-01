@@ -23,12 +23,14 @@ class rex_structure_article_status extends rex_structure_action_field
         $status_class = $states[$status_index][1];
         $status_icon = $states[$status_index][2];
 
+        $css_class = $this->hasVar('class') ? $this->getVar('class') : 'btn btn-default';
+
         $button_params = [
             $this->hasVar('hide_label') && $this->getVar('hide_label') ? 'hidden_label' : 'label' => $status,
             'icon' => 'rex-icon '.$status_icon,
             'attributes' => [
                 'class' => [
-                    'btn',
+                    $css_class,
                     $status_class,
                 ],
                 'title' => $status,
@@ -41,9 +43,6 @@ class rex_structure_article_status extends rex_structure_action_field
                 'article_id' => $article_id,
             ]);
             $button_params['url'] = $context->getUrl($url_params, false);
-            $button_params['attributes']['class'][] = 'btn-default';
-        } else {
-            $button_params['attributes']['class'][] = 'text-muted';
         }
 
         return $this->getButtonFragment($button_params);

@@ -8,6 +8,12 @@
  * @package redaxo5
  */
 
+if (rex::isBackend() && rex::getUser()) {
+    if (rex_be_controller::getCurrentPage() == 'content/edit') {
+        rex_view::addCssFile($this->getAssetsUrl('fix_be_styles.css'));
+    }
+}
+
 rex_perm::register('moveSlice[]', null, rex_perm::OPTIONS);
 rex_complex_perm::register('modules', 'rex_module_perm');
 
@@ -35,30 +41,28 @@ if (rex::isBackend()) {
         ];
 
         // Predefine columns
-        $actions = new rex_structure_action_row($action_vars);
-        $actions['meta'] = new rex_structure_action_column();
-        $actions['status'] = new rex_structure_action_column();
-        $actions['action'] = new rex_structure_action_column();
-        $actions['content_action'] = new rex_structure_action_column();
+        $actions = rex_structure_action_row::factory($action_vars);
+        $actions->setColumns([
+            'meta' => rex_structure_action_column::factory(),
+            'status' => rex_structure_action_column::factory(),
+            'actions' => rex_structure_action_column::factory(),
+        ]);
 
         // Add fields
-        $actions['meta']
-            ->setField('created_on', new rex_structure_article_create_date($action_vars))
-            ->setField('created_by', new rex_structure_article_create_user($action_vars))
-            ->setField('updated_on', new rex_structure_article_update_date($action_vars))
-            ->setField('updated_by', new rex_structure_article_update_user($action_vars));
-
-        $actions['status']
-            ->setField('status_status', new rex_structure_article_status($action_vars));
-        $actions['action']
-            ->setField('status_edit', new rex_structure_article_edit($action_vars))
-            ->setField('status_delete', new rex_structure_article_delete($action_vars))
-            ->setField('article2category', new rex_structure_article2category($action_vars))
-            ->setField('article2startarticle', new rex_structure_article2Startarticle($action_vars))
-            ->setField('article_move', new rex_structure_article_move($action_vars))
-            ->setField('article_copy', new rex_structure_article_copy($action_vars));
-        $actions['content_action']
-            ->setField('content_copy', new rex_structure_content_copy($action_vars));
+        $actions->getColumn('meta')
+            ->setField('created_on', rex_structure_article_create_date::factory($action_vars))
+            ->setField('created_by', rex_structure_article_create_user::factory($action_vars))
+            ->setField('updated_on', rex_structure_article_update_date::factory($action_vars))
+            ->setField('updated_by', rex_structure_article_update_user::factory($action_vars))
+            ->setField('status', rex_structure_article_status::factory($action_vars)->setVar('class',''));
+        $actions->getColumn('actions')
+            ->setField('status_edit', rex_structure_article_edit::factory($action_vars))
+            ->setField('status_delete', rex_structure_article_delete::factory($action_vars))
+            ->setField('article2category', rex_structure_article2category::factory($action_vars))
+            ->setField('article2startarticle', rex_structure_article2Startarticle::factory($action_vars))
+            ->setField('article_move', rex_structure_article_move::factory($action_vars))
+            ->setField('article_copy', rex_structure_article_copy::factory($action_vars))
+            ->setField('content_copy', rex_structure_content_copy::factory($action_vars));
 
         // EXTENSION POINT to manipulate the $article_actions
         $actions = rex_extension::registerPoint(new rex_extension_point('PAGE_CONTENT_ARTICLE_ACTIONS', $actions, [
