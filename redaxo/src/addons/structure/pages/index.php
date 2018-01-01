@@ -124,7 +124,7 @@ if (count($mountpoints) > 0 && $category_id == 0) {
 $table_head = '';
 $table_body = '';
 
-// These Variables are passed to rows, columns and fields
+// These variables are passed to rows, columns and fields
 $category_action_vars = [
     'category' => $category,
     'edit_id' => $category_id, // This key is overwritten in the loop
@@ -138,23 +138,24 @@ $category_action_vars = [
     ],
 ];
 
-// Predefine columns
-$category_row = new rex_structure_action_row($category_action_vars);
-$category_row
-    ->setColumn('icon', new rex_structure_action_column())
-    ->setColumn('id', new rex_structure_action_column())
-    ->setColumn('category', new rex_structure_action_column())
-    ->setColumn('priority', new rex_structure_action_column())
-    ->setColumn('status', new rex_structure_action_column())
-    ->setColumn('action', new rex_structure_action_column());
+// The category action row persists the initial edit_id
+$category_row = rex_structure_action_row::factory($category_action_vars);
 
-// Add table head actions
-$category_row_icon = new rex_structure_category_add($category_action_vars);
-$category_row_icon
-    ->setVar('hide_label', true)
-    ->setVar('hide_border', true);
-$category_row->getColumn('icon')
-    ->setHead($category_row_icon);
+// The category action columns get an update of the edit_id in the loop
+$category_columns = [
+    'icon' => rex_structure_action_column::factory($category_action_vars),
+    'id' => rex_structure_action_column::factory($category_action_vars),
+    'category' => rex_structure_action_column::factory($category_action_vars),
+    'priority' => rex_structure_action_column::factory($category_action_vars),
+    'status' => rex_structure_action_column::factory($category_action_vars),
+    'action' => rex_structure_action_column::factory($category_action_vars),
+];
+// To column heads the initial edit_id is passed
+$category_columns['icon']
+    ->setHead(rex_structure_category_add::factory($category_action_vars)
+        ->setVar('hide_label', true)
+        ->setVar('hide_border', true)
+    );
 
 // Add table body actions and generate body output
 do {
@@ -163,33 +164,24 @@ do {
     // this way all action classes and fragments can use the same variable names
     $category_action_vars['edit_id'] = $i_category_id;
 
-    if ($category_row->hasColumn('icon')) {
-        $category_row->getColumn('icon')
-             ->setField('category_icon', new rex_structure_category_icon($category_action_vars));
-    }
-    if ($category_row->hasColumn('id')) {
-        $category_row->getColumn('id')
-            ->setField('category_id', new rex_structure_category_id($category_action_vars));
-    }
-    if ($category_row->hasColumn('category')) {
-        $category_row->getColumn('category')
-            ->setField('category_name', new rex_structure_category_name($category_action_vars));
-    }
-    if ($category_row->hasColumn('priority')) {
-        $category_row->getColumn('priority')
-            ->setField('category_priority', new rex_structure_category_priority($category_action_vars));
-    }
-    if ($category_row->hasColumn('status')) {
-        $category_row->getColumn('status')
-            ->setField('category_status', new rex_structure_category_status($category_action_vars));
-    }
-    if ($category_row->hasColumn('action')) {
-        $category_row->getColumn('action')
-            ->setField('category_edit', new rex_structure_category_edit($category_action_vars))
-            ->setField('category_delete', new rex_structure_category_delete($category_action_vars));
-    }
+    // Reset columns, otherwise the manipulations done by the extension point would affect the loop
+    $category_row->setColumns($category_columns);
+    // To the column body fields an updated edit_id is passed
+    $category_row->getColumn('icon')
+        ->setField('category_icon', rex_structure_category_icon::factory($category_action_vars));
+    $category_row->getColumn('id')
+        ->setField('category_id', rex_structure_category_id::factory($category_action_vars));
+    $category_row->getColumn('category')
+        ->setField('category_name', rex_structure_category_name::factory($category_action_vars));
+    $category_row->getColumn('priority')
+        ->setField('category_priority', rex_structure_category_priority::factory($category_action_vars));
+    $category_row->getColumn('status')
+        ->setField('category_status', rex_structure_category_status::factory($category_action_vars));
+    $category_row->getColumn('action')
+        ->setField('category_edit', rex_structure_category_edit::factory($category_action_vars))
+        ->setField('category_delete', rex_structure_category_delete::factory($category_action_vars));
 
-    // EXTENSION POINT to manipulate $category_row
+    // EXTENSION POINT to manipulate row, columns and fields
     $category_row = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_row, [
         'action_vars' => $category_action_vars,
     ]));
@@ -280,25 +272,26 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         ],
     ];
 
-    // Predefine columns
-    $article_row = new rex_structure_action_row($article_action_vars);
-    $article_row
-        ->setColumn('icon', new rex_structure_action_column())
-        ->setColumn('id', new rex_structure_action_column())
-        ->setColumn('article', new rex_structure_action_column())
-        ->setColumn('template', new rex_structure_action_column())
-        ->setColumn('date', new rex_structure_action_column())
-        ->setColumn('priority', new rex_structure_action_column())
-        ->setColumn('status', new rex_structure_action_column())
-        ->setColumn('action', new rex_structure_action_column());
+    // The article action row persists the initial edit_id
+    $article_row = rex_structure_action_row::factory($article_action_vars);
 
-    // Add table head actions
-    $article_row_icon = new rex_structure_article_add($article_action_vars);
-    $article_row_icon
+    // The article action columns get an update of the edit_id in the loop
+    $article_columns = [
+        'icon' => rex_structure_action_column::factory($article_action_vars),
+        'id' => rex_structure_action_column::factory($article_action_vars),
+        'article' => rex_structure_action_column::factory($article_action_vars),
+        'template' => rex_structure_action_column::factory($article_action_vars),
+        'date' => rex_structure_action_column::factory($article_action_vars),
+        'priority' => rex_structure_action_column::factory($article_action_vars),
+        'status' => rex_structure_action_column::factory($article_action_vars),
+        'action' => rex_structure_action_column::factory($article_action_vars),
+    ];
+    // To column heads the initial edit_id is passed
+    $article_columns['icon']
+        ->setHead(rex_structure_article_add::factory($article_action_vars)
         ->setVar('hide_label', true)
-        ->setVar('hide_border', true);
-    $article_row->getColumn('icon')
-        ->setHead($article_row_icon);
+        ->setVar('hide_border', true)
+    );
 
     // Add table body actions and generate body output
     do {
@@ -306,39 +299,26 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         // this way all action classes and fragments can use the same variable names
         $article_action_vars['edit_id'] = $sql->getValue('id');
 
-        if ($article_row->hasColumn('icon')) {
-                $article_row->getColumn('icon')
-                    ->setField('article_icon', new rex_structure_article_icon($article_action_vars));
-        }
-        if ($article_row->hasColumn('id')) {
-            $article_row->getColumn('id')
-                ->setField('article_id', new rex_structure_article_id($article_action_vars));
-        }
-        if ($article_row->hasColumn('article')) {
-            $article_row->getColumn('article')
-                ->setField('article_name', new rex_structure_article_name($article_action_vars));
-        }
-        if ($article_row->hasColumn('template')) {
-            $article_row->getColumn('template')
-                ->setField('article_template', new rex_structure_article_template($article_action_vars));
-        }
-        if ($article_row->hasColumn('date')) {
-            $article_row->getColumn('date')
-                ->setField('article_create_date', new rex_structure_article_create_date($article_action_vars));
-        }
-        if ($article_row->hasColumn('priority')) {
-            $article_row->getColumn('priority')
-                ->setField('article_priority', new rex_structure_article_priority($article_action_vars));
-        }
-        if ($article_row->hasColumn('status')) {
-            $article_row->getColumn('status')
-                ->setField('article_status', new rex_structure_article_status($article_action_vars));
-        }
-        if ($article_row->hasColumn('action')) {
-            $article_row->getColumn('action')
-                ->setField('article_edit', new rex_structure_article_edit($article_action_vars))
-                ->setField('article_delete', new rex_structure_article_delete($article_action_vars));
-        }
+        // Reset columns, otherwise the manipulations done by the extension point would affect the loop
+        $article_row->setColumns($article_columns);
+        // To the column body fields an updated edit_id is passed
+        $article_row->getColumn('icon')
+            ->setField('article_icon', rex_structure_article_icon::factory($article_action_vars));
+        $article_row->getColumn('id')
+            ->setField('article_id', rex_structure_article_id::factory($article_action_vars));
+        $article_row->getColumn('article')
+            ->setField('article_name', rex_structure_article_name::factory($article_action_vars));
+        $article_row->getColumn('template')
+            ->setField('article_template', rex_structure_article_template::factory($article_action_vars));
+        $article_row->getColumn('date')
+            ->setField('article_create_date', rex_structure_article_create_date::factory($article_action_vars));
+        $article_row->getColumn('priority')
+            ->setField('article_priority', rex_structure_article_priority::factory($article_action_vars));
+        $article_row->getColumn('status')
+            ->setField('article_status', rex_structure_article_status::factory($article_action_vars));
+        $article_row->getColumn('action')
+            ->setField('article_edit', rex_structure_article_edit::factory($article_action_vars))
+            ->setField('article_delete', rex_structure_article_delete::factory($article_action_vars));
 
         // EXTENSION POINT to manipulate $article_row
         $article_row = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_row, [

@@ -9,6 +9,7 @@ class rex_structure_action_row
     /**
      * Traits
      */
+    use rex_factory_trait;
     use rex_structure_trait_vars;
     /**
      * @var array
@@ -17,8 +18,20 @@ class rex_structure_action_row
 
     /**
      * @param array $vars
+     *
+     * @return static
      */
-    public function __construct($vars = [])
+    public static function factory($vars = [])
+    {
+        $class = static::getFactoryClass();
+
+        return new $class($vars);
+    }
+
+    /**
+     * @param array $vars
+     */
+    protected function __construct($vars = [])
     {
         $this->setVars($vars);
     }

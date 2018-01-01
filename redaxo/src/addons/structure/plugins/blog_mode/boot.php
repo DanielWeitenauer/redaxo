@@ -27,9 +27,9 @@ rex_extension::register('PAGE_STRUCTURE_CATEGORY_ACTIONS', function (rex_extensi
     $category_row = $ep->getSubject();
     $action_vars = $ep->getParam('action_vars');
 
-    $category_row->setColumn('type', new rex_structure_action_column($action_vars));
+    $category_row->setColumn('type', rex_structure_action_column::factory($action_vars));
     $category_row->getColumn('type')
-        ->setField('blog_mode', new rex_blog_mode_info($action_vars));
+        ->setField('blog_mode', rex_blog_mode_info::factory($action_vars));
 
     return $category_row;
 }, rex_extension::LATE);
@@ -51,27 +51,33 @@ rex_extension::register('PAGE_STRUCTURE_ARTICLE_ACTIONS', function (rex_extensio
                 ->unsetColumn('date');
 
             // Remove unnecessary fields
-            $article_row->getColumn('status')
-                ->unsetField('article_edit');
-            $article_row->getColumn('action')
-                ->unsetField('article2startarticle')
-                ->unsetField('article2category');
+            if ($article_row->hasColumn('status')) {
+                $article_row->getColumn('status')
+                    ->unsetField('article_edit');
+            }
+            if ($article_row->hasColumn('action')) {
+                $article_row->getColumn('action')
+                    ->unsetField('article2startarticle')
+                    ->unsetField('article2category');
+            }
 
             // Add createdate and updatedate and make them sortable
             $article_row
-                ->setColumn('create_date', new rex_structure_action_column($action_vars))
+                ->setColumn('create_date', rex_structure_action_column::factory($action_vars))
                 ->getColumn('create_date')
-                ->setHead(new rex_blog_mode_article_header_createdate_sortable($action_vars))
-                ->setField('article_create_date', new rex_structure_article_create_date($action_vars));
+                ->setHead(rex_blog_mode_article_header_createdate_sortable::factory($action_vars))
+                ->setField('article_create_date', rex_structure_article_create_date::factory($action_vars));
             $article_row
-                ->setColumn('update_date', new rex_structure_action_column($action_vars))
+                ->setColumn('update_date', rex_structure_action_column::factory($action_vars))
                 ->getColumn('update_date')
-                ->setHead(new rex_blog_mode_article_header_updatedate_sortable($action_vars))
-                ->setField('article_update_date', new rex_structure_article_update_date($action_vars));
+                ->setHead(rex_blog_mode_article_header_updatedate_sortable::factory($action_vars))
+                ->setField('article_update_date', rex_structure_article_update_date::factory($action_vars));
 
             // Make name sortable
-            $article_row->getColumn('article')
-                ->setHead(new rex_blog_mode_article_header_name_sortable($action_vars));
+            if ($article_row->hasColumn('article')) {
+                $article_row->getColumn('article')
+                    ->setHead(rex_blog_mode_article_header_name_sortable::factory($action_vars));
+            }
         }
     }
 
