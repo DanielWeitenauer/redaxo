@@ -1,5 +1,6 @@
-header_status = Status
-header_action = Aktionen
+header_type = Kategorien-Typ
+blog_mode = Blog
+standard_mode = Standard
 header_create_date = Erstellungsdatum
 header_update_date = Änderungsdatum
 sort_order_changed = Sortierung geändert
