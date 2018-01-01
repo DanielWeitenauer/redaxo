@@ -1,0 +1,4 @@
+.table th.rex-table-action:not([colspan]),
+.table td.rex-table-action:not([colspan]) {
+    width: auto;
+}
