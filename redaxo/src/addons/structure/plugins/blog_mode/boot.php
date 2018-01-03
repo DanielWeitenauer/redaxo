@@ -34,7 +34,7 @@ if (rex::isBackend() && rex::getUser()) {
 
         $category_row->setColumn('type', rex_structure_action_column::factory($action_vars));
         $category_row->getColumn('type')
-                     ->setField('category_type', rex_blog_mode_info::factory($action_vars));
+             ->setField('category_type', rex_blog_mode_info::factory($action_vars));
 
         return $category_row;
     }, rex_extension::LATE);
@@ -52,6 +52,7 @@ if (rex::isBackend() && rex::getUser()) {
                 // Remove unnecessary columns
                 $article_row
                     ->unsetColumn('prio')
+                    ->unsetColumn('priority')
                     ->unsetColumn('template')
                     ->unsetColumn('date');
 
