@@ -25,7 +25,8 @@ class rex_structure_article_priority_ext extends rex_structure_action_field
             'label' => htmlspecialchars($sql->getValue('priority')),
             'attributes' => [
                 'class' => [
-                    'btn',
+                    'btn btn-default',
+                    'rex-structure-prio-ext'
                 ],
                 'title' => rex_i18n::msg('header_priority'),
             ]
@@ -36,7 +37,6 @@ class rex_structure_article_priority_ext extends rex_structure_action_field
                 'form_article_priority' => $article_id,
             ]);
             $button_params['url'] = $context->getUrl($url_params, false);
-            $button_params['attributes']['class'][] = 'btn-default';
         }
 
         return $this->getButtonFragment($button_params);
