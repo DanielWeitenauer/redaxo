@@ -347,7 +347,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         $sql->next();
     } while ($sql->hasNext());
 
-    // Table head
+    // The head is generated after the body, in case any changes where made via extension point
     $table_head .= $article_row->getFragment('structure/table_article_row_head.php');
 
     $fragment = new rex_fragment();
