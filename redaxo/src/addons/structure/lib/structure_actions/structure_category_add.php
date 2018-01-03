@@ -47,16 +47,22 @@ class rex_structure_category_add extends rex_structure_action_field
     public function getModal()
     {
         $category_id = $this->getVar('edit_id');
-        $clang = $this->getVar('clang');
-        $data_colspan = 5; // Only for bc reasons
 
         if (!rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
             return '';
         }
         // Show form if only if requested
-        if (rex_request('form_article_add', 'int', -1) != $category_id) {
+        if (rex_request('form_category_add', 'int', -1) != $category_id) {
             return '';
         }
+
+        $clang = $this->getVar('clang');
+        /** @var rex_pager $pager */
+        $pager = $this->getVar('pager');
+        /** @var rex_context $context */
+        $context = $this->getVar('context');
+        $url_params = $this->getVar('url_params');
+        $data_colspan = 5; // Only for bc reasons
 
         // EXTENSION POINT
         $cat_form_buttons = rex_extension::registerPoint(new rex_extension_point('CAT_FORM_BUTTONS', '', [
@@ -74,7 +80,7 @@ class rex_structure_category_add extends rex_structure_action_field
         return '  
             <div class="modal fade" id="category-add-'.$category_id.'" style="text-align:left;">
                 <div class="modal-dialog">
-                    <form id="rex-form-category-add-'.$category_id.'" class="modal-content form-vertical" action="'.$this->context->getUrl($this->url_params).'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
+                    <form id="rex-form-category-add-'.$category_id.'" class="modal-content form-vertical" action="'.$context->getUrl($url_params).'" method="post" enctype="multipart/form-data" data-pjax-container="#rex-page-main">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             <h3 class="modal-title">'.rex_i18n::msg('header_category').'</h3>
@@ -90,7 +96,7 @@ class rex_structure_category_add extends rex_structure_action_field
                                     </dl>
                                     <dl class="rex-form-group form-group">
                                         <dt><label for="category-position">'.rex_i18n::msg('header_priority').'</label></dt>
-                                        <dd><input id="category-position" class="form-control" type="text" name="category-position" value="'.($this->pager->getRowCount() + 1).'" /></dd>
+                                        <dd><input id="category-position" class="form-control" type="text" name="category-position" value="'.($pager->getRowCount() + 1).'" /></dd>
                                     </dl>
                                     '.$cat_form_buttons.'
                                     '.$cat_form_add.'

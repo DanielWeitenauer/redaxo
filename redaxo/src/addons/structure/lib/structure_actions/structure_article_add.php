@@ -57,6 +57,8 @@ class rex_structure_article_add extends rex_structure_action_field
             return '';
         }
 
+        /** @var rex_pager $pager */
+        $pager = $this->getVar('pager');
 
         $template_select = '';
         if (rex_addon::get('structure')->getPlugin('content')->isAvailable()) {
@@ -115,7 +117,7 @@ class rex_structure_article_add extends rex_structure_action_field
                         </dl>
                         <dl class="rex-form-group form-group">
                             <dt><label for="article-position">'.rex_i18n::msg('header_priority').'</label></dt>
-                            <dd><input id="article-position" class="form-control" type="text" name="article-position" value="'.($this->getPagerRows() + 1).'" /></dd>
+                            <dd><input id="article-position" class="form-control" type="text" name="article-position" value="'.($pager->getRowCount() + 1).'" /></dd>
                         </dl>
                     </div>
                 </div>
