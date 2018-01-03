@@ -150,36 +150,43 @@ $category_columns = [
     'status' => rex_structure_action_column::factory($category_action_vars),
     'action' => rex_structure_action_column::factory($category_action_vars),
 ];
-// To column heads the initial edit_id is passed
+// To column heads the initial edit_id is passed, the fields will be updated
 $category_columns['icon']
     ->setHead(rex_structure_category_add::factory($category_action_vars)
         ->setVar('hide_label', true)
         ->setVar('hide_border', true)
-    );
+    )
+    ->setField('category_icon', rex_structure_category_icon::factory($category_action_vars));
+$category_columns['id']
+    ->setField('category_id', rex_structure_category_id::factory($category_action_vars));
+$category_columns['category']
+    ->setField('category_name', rex_structure_category_name::factory($category_action_vars));
+$category_columns['priority']
+    ->setField('category_priority', rex_structure_category_priority::factory($category_action_vars));
+$category_columns['status']
+    ->setField('category_status', rex_structure_category_status::factory($category_action_vars));
+$category_columns['action']
+    ->setField('category_edit', rex_structure_category_edit::factory($category_action_vars))
+    ->setField('category_delete', rex_structure_category_delete::factory($category_action_vars));
 
 // Add table body actions and generate body output
 do {
     $i_category_id = $KAT->getRows() ? $KAT->getValue('id') : 0;
-    // Overwrite id of active category with the id of the category currently looped over
-    // this way all action classes and fragments can use the same variable names
-    $category_action_vars['edit_id'] = $i_category_id;
 
     // Reset columns, otherwise the manipulations done by the extension point would affect the loop
     $category_row->setColumns($category_columns);
-    // To the column body fields an updated edit_id is passed
-    $category_row->getColumn('icon')
-        ->setField('category_icon', rex_structure_category_icon::factory($category_action_vars));
-    $category_row->getColumn('id')
-        ->setField('category_id', rex_structure_category_id::factory($category_action_vars));
-    $category_row->getColumn('category')
-        ->setField('category_name', rex_structure_category_name::factory($category_action_vars));
-    $category_row->getColumn('priority')
-        ->setField('category_priority', rex_structure_category_priority::factory($category_action_vars));
-    $category_row->getColumn('status')
-        ->setField('category_status', rex_structure_category_status::factory($category_action_vars));
-    $category_row->getColumn('action')
-        ->setField('category_edit', rex_structure_category_edit::factory($category_action_vars))
-        ->setField('category_delete', rex_structure_category_delete::factory($category_action_vars));
+
+    // Overwrite id of active category with the id of the category currently looped over
+    // this way all action classes and fragments can use the same variable names
+    $category_row->getColumn('icon')->getField('category_icon')->setVar('edit_id', $i_category_id);
+    $category_row->getColumn('id')->getField('category_id')->setVar('edit_id', $i_category_id);
+    $category_row->getColumn('category')->getField('category_name')->setVar('edit_id', $i_category_id);
+    $category_row->getColumn('priority')->getField('category_priority')->setVar('edit_id', $i_category_id);
+    $category_row->getColumn('status')->getField('category_status')->setVar('edit_id', $i_category_id);
+    $category_row->getColumn('action')->getField('category_edit')->setVar('edit_id', $i_category_id);
+    $category_row->getColumn('action')->getField('category_delete')->setVar('edit_id', $i_category_id);
+
+    $category_action_vars['edit_id'] = $i_category_id;
 
     // EXTENSION POINT to manipulate row, columns and fields
     $category_row = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_CATEGORY_ACTIONS', $category_row, [
@@ -289,36 +296,46 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     // To column heads the initial edit_id is passed
     $article_columns['icon']
         ->setHead(rex_structure_article_add::factory($article_action_vars)
-        ->setVar('hide_label', true)
-        ->setVar('hide_border', true)
-    );
+            ->setVar('hide_label', true)
+            ->setVar('hide_border', true)
+        )
+        ->setField('article_icon', rex_structure_article_icon::factory($article_action_vars));
+    $article_columns['id']
+        ->setField('article_id', rex_structure_article_id::factory($article_action_vars));
+    $article_columns['article']
+        ->setField('article_name', rex_structure_article_name::factory($article_action_vars));
+    $article_columns['template']
+        ->setField('article_template', rex_structure_article_template::factory($article_action_vars));
+    $article_columns['date']
+        ->setField('article_create_date', rex_structure_article_create_date::factory($article_action_vars));
+    $article_columns['priority']
+        ->setField('article_priority', rex_structure_article_priority::factory($article_action_vars));
+    $article_columns['status']
+        ->setField('article_status', rex_structure_article_status::factory($article_action_vars));
+    $article_columns['action']
+        ->setField('article_edit', rex_structure_article_edit::factory($article_action_vars))
+        ->setField('article_delete', rex_structure_article_delete::factory($article_action_vars));
 
     // Add table body actions and generate body output
     do {
-        // Overwrite id of active category with the id of the article currently looped over
-        // this way all action classes and fragments can use the same variable names
-        $article_action_vars['edit_id'] = $sql->getValue('id');
+        $i_article_id = $sql->getValue('id');
 
         // Reset columns, otherwise the manipulations done by the extension point would affect the loop
         $article_row->setColumns($article_columns);
-        // To the column body fields an updated edit_id is passed
-        $article_row->getColumn('icon')
-            ->setField('article_icon', rex_structure_article_icon::factory($article_action_vars));
-        $article_row->getColumn('id')
-            ->setField('article_id', rex_structure_article_id::factory($article_action_vars));
-        $article_row->getColumn('article')
-            ->setField('article_name', rex_structure_article_name::factory($article_action_vars));
-        $article_row->getColumn('template')
-            ->setField('article_template', rex_structure_article_template::factory($article_action_vars));
-        $article_row->getColumn('date')
-            ->setField('article_create_date', rex_structure_article_create_date::factory($article_action_vars));
-        $article_row->getColumn('priority')
-            ->setField('article_priority', rex_structure_article_priority::factory($article_action_vars));
-        $article_row->getColumn('status')
-            ->setField('article_status', rex_structure_article_status::factory($article_action_vars));
-        $article_row->getColumn('action')
-            ->setField('article_edit', rex_structure_article_edit::factory($article_action_vars))
-            ->setField('article_delete', rex_structure_article_delete::factory($article_action_vars));
+
+        // Overwrite id of active category with the id of the article currently looped over
+        // this way all action classes and fragments can use the same variable names
+        $article_row->getColumn('icon')->getField('article_icon')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('id')->getField('article_id')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('article')->getField('article_name')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('template')->getField('article_template')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('date')->getField('article_create_date')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('priority')->getField('article_priority')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('status')->getField('article_status')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('action')->getField('article_edit')->setVar('edit_id', $i_article_id);
+        $article_row->getColumn('action')->getField('article_delete')->setVar('edit_id', $i_article_id);
+
+        $article_action_vars['edit_id'] = $i_article_id;
 
         // EXTENSION POINT to manipulate $article_row
         $article_row = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_ARTICLE_ACTIONS', $article_row, [
