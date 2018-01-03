@@ -32,6 +32,7 @@ class rex_structure_category_move extends rex_structure_action_field
                 'class' => [
                     'btn btn-default',
                 ],
+                'title' => rex_i18n::msg('content_submitmovecategory'),
             ],
         ];
 

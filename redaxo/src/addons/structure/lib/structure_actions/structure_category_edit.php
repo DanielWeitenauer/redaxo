@@ -25,6 +25,7 @@ class rex_structure_category_edit extends rex_structure_action_field
                 'class' => [
                     'btn',
                 ],
+                'title' => rex_i18n::msg('change'),
             ],
         ];
 
