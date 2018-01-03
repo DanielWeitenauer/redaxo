@@ -9,6 +9,7 @@
         <th class="rex-table-<?=rex_string::normalize($column_key, '-');?>">
             <?php if ($column->hasHead()): ?>
                 <?= $column->getHead()->get(); ?>
+                <?= $column->getHead()->getModal(); ?>
             <?php else: ?>
                 <?=rex_i18n::msg('header_'.$column_key);?>
             <?php endif;?>

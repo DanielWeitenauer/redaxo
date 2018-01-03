@@ -15,7 +15,7 @@ foreach ($this->columns as $column_key => $column) {
             if (rex_i18n::hasMsg($field_key)) {
                 $output_item .= '<dt>'.rex_i18n::msg($field_key).'</dt><dd>'.$field->get().'</dd>';
             } else {
-                $output_item .= $field->get();
+                $output_item .= $field->get().$field->getModal();
             }
         }
     }
@@ -35,9 +35,5 @@ foreach ($this->columns as $column_key => $column) {
         <td class="rex-table-<?=rex_string::normalize($output_key, '-');?>" data-title="<?=rex_i18n::msg('header_'.$output_key);?>">
             <?=$output_item;?>
         </td>
-    <?php endforeach; ?>
-
-    <?php foreach ($column->getFields() as $field):  /** @var rex_structure_action_field $field */ ?>
-        <?= $field->getModal(); ?>
     <?php endforeach; ?>
 </tr>
