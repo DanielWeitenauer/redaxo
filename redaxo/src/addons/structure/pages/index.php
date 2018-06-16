@@ -490,8 +490,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             $article_status = rex_structure_field_article_status::factory($article_vars)->getField();
             $article_delete = rex_structure_field_article_delete::factory($article_vars)->getField();
             $article_edit = rex_structure_field_article_edit::factory($article_vars)->getField();
-
-            $editModeUrl = $context->getUrl(['page' => 'content/edit', 'article_id' => $sql->getValue('id'), 'mode' => 'edit']);
+            $article_name = rex_structure_field_article_name::factory($article_vars)->getField();
 
             $tmpl_td = '';
             if ($withTemplates) {
@@ -502,7 +501,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             $echo .= '<tr' . (($class_startarticle != '') ? ' class="' . trim($class_startarticle) . '"' : '') . '>
                             <td class="rex-table-icon"><a href="' . $editModeUrl . '" title="' . htmlspecialchars($sql->getValue('name')) . '"><i class="rex-icon' . $class . '"></i></a></td>
                             <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $sql->getValue('id') . '</td>
-                            <td data-title="' . rex_i18n::msg('header_article_name') . '"><a href="' . $editModeUrl . '">' . htmlspecialchars($sql->getValue('name')) . '</a></td>
+                            <td data-title="' . rex_i18n::msg('header_article_name') . '">'.$article_name.'</td>
                             ' . $tmpl_td . '
                             <td data-title="' . rex_i18n::msg('header_date') . '">' . rex_formatter::strftime($sql->getDateTimeValue('createdate'), 'date') . '</td>
                             <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($sql->getValue('priority')) . '</td>
@@ -516,6 +515,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             $article_status = rex_structure_field_article_status::factory($article_vars)->getField();
             $article_delete = rex_structure_field_article_delete::factory($article_vars)->getField();
             $article_edit = rex_structure_field_article_edit::factory($article_vars)->getField();
+            $article_name = rex_structure_field_article_name::factory($article_vars)->getField();
 
             $tmpl_td = '';
             if ($withTemplates) {
@@ -526,7 +526,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             $echo .= '<tr>
                             <td class="rex-table-icon"><i class="rex-icon' . $class . '"></i></td>
                             <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $sql->getValue('id') . '</td>
-                            <td data-title="' . rex_i18n::msg('header_article_name') . '">' . htmlspecialchars($sql->getValue('name')) . '</td>
+                            <td data-title="' . rex_i18n::msg('header_article_name') . '">'.$article_name.'</td>
                             ' . $tmpl_td . '
                             <td data-title="' . rex_i18n::msg('header_date') . '">' . rex_formatter::strftime($sql->getDateTimeValue('createdate'), 'date') . '</td>
                             <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($sql->getValue('priority')) . '</td>
