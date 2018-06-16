@@ -92,15 +92,22 @@ class rex_metainfo_category_handler extends rex_metainfo_handler
             $params['activeItem']->setValue('category_id', $params['id']);
         }
 
-        $result = '
-            <tr id="' . self::CONTAINER . '" class="collapse mark">
-                <td colspan="2"></td>
-                <td colspan="5">
-                    <div class="rex-collapse-content">
-                    ' . parent::renderFormAndSave(self::PREFIX, $params) . '
-                    </div>
-                </td>
-            </tr>';
+        /**
+         * @since 3.0.0-dev
+         */
+        if (rex_string::versionCompare(rex_addon::get('structure')->getVersion(), '3.0.0-dev', '<')) {
+            $result = '
+                <tr id="' . self::CONTAINER . '" class="collapse mark">
+                    <td colspan="2"></td>
+                    <td colspan="5">
+                        <div class="rex-collapse-content">
+                        ' . parent::renderFormAndSave(self::PREFIX, $params) . '
+                        </div>
+                    </td>
+                </tr>';
+        } else {
+            $result = parent::renderFormAndSave(self::PREFIX, $params);
+        }
 
         // Bei CAT_ADDED und CAT_UPDATED nur speichern und kein Formular zurückgeben
         if ('CAT_UPDATED' == $ep->getName() || 'CAT_ADDED' == $ep->getName()) {
