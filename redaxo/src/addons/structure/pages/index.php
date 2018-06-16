@@ -491,6 +491,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             $article_delete = rex_structure_field_article_delete::factory($article_vars)->getField();
             $article_edit = rex_structure_field_article_edit::factory($article_vars)->getField();
             $article_name = rex_structure_field_article_name::factory($article_vars)->getField();
+            $article_icon = rex_structure_field_article_icon::factory($article_vars)->getField();
 
             $tmpl_td = '';
             if ($withTemplates) {
@@ -499,7 +500,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             }
 
             $echo .= '<tr' . (($class_startarticle != '') ? ' class="' . trim($class_startarticle) . '"' : '') . '>
-                            <td class="rex-table-icon"><a href="' . $editModeUrl . '" title="' . htmlspecialchars($sql->getValue('name')) . '"><i class="rex-icon' . $class . '"></i></a></td>
+                            <td class="rex-table-icon">'.$article_icon.'</td>
                             <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $sql->getValue('id') . '</td>
                             <td data-title="' . rex_i18n::msg('header_article_name') . '">'.$article_name.'</td>
                             ' . $tmpl_td . '
@@ -516,6 +517,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             $article_delete = rex_structure_field_article_delete::factory($article_vars)->getField();
             $article_edit = rex_structure_field_article_edit::factory($article_vars)->getField();
             $article_name = rex_structure_field_article_name::factory($article_vars)->getField();
+            $article_icon = rex_structure_field_article_icon::factory($article_vars)->getField();
 
             $tmpl_td = '';
             if ($withTemplates) {
@@ -524,7 +526,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             }
 
             $echo .= '<tr>
-                            <td class="rex-table-icon"><i class="rex-icon' . $class . '"></i></td>
+                            <td class="rex-table-icon">'.$article_icon.'</td>
                             <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $sql->getValue('id') . '</td>
                             <td data-title="' . rex_i18n::msg('header_article_name') . '">'.$article_name.'</td>
                             ' . $tmpl_td . '
