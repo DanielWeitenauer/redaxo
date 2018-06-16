@@ -496,18 +496,19 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         $article_create_date = rex_structure_field_article_create_date::factory($article_vars)->getField();
         $article_priority = rex_structure_field_article_priority::factory($article_vars)->getField();
 
-        $echo .= '<tr' . (($class_startarticle != '') ? ' class="' . trim($class_startarticle) . '"' : '') . '>
-                        <td class="rex-table-icon">'.$article_icon.'</td>
-                        <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$article_id_field.'</td>
-                        <td data-title="' . rex_i18n::msg('header_article_name') . '">'.$article_name.'</td>
-                        <td data-title="' . rex_i18n::msg('header_template') . '">'.$article_template.'</td>
-                        <td data-title="' . rex_i18n::msg('header_date') . '">'.$article_create_date.'</td>
-                        <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">'.$article_priority.'</td>
-                        <td class="rex-table-action">'.$article_edit.'</td>
-                        <td class="rex-table-action">'.$article_delete.'</td>
-                        <td class="rex-table-action">'.$article_status.'</td>
-                    </tr>
-                    ';
+        $echo .= '
+            <tr' . (($class_startarticle != '') ? ' class="' . trim($class_startarticle) . '"' : '') . '>
+                <td class="rex-table-icon">'.$article_icon.'</td>
+                <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$article_id_field.'</td>
+                <td data-title="' . rex_i18n::msg('header_article_name') . '">'.$article_name.'</td>
+                <td data-title="' . rex_i18n::msg('header_template') . '">'.$article_template.'</td>
+                <td data-title="' . rex_i18n::msg('header_date') . '">'.$article_create_date.'</td>
+                <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">'.$article_priority.'</td>
+                <td class="rex-table-action">'.$article_edit.'</td>
+                <td class="rex-table-action">'.$article_delete.'</td>
+                <td class="rex-table-action">'.$article_status.'</td>
+            </tr>
+        ';
 
         $sql->next();
     }
