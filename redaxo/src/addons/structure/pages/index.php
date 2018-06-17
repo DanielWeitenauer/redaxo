@@ -175,8 +175,6 @@ if ($function == 'add_cat' && $KATPERM) {
 // --------------------- KATEGORIE LIST
 if ($KAT->getRows() > 0) {
     for ($i = 0; $i < $KAT->getRows(); ++$i) {
-        $i_category_id = $KAT->getValue('id');
-
         // These params are passed to the structure fields
         $category_provider = rex_structure_data_provider::factory();
         $category_provider->setSql($KAT);
@@ -189,32 +187,16 @@ if ($KAT->getRows() > 0) {
         $category_id_field = rex_structure_field_category_id::factory($category_provider)->getField();
         $category_priority = rex_structure_field_category_priority::factory($category_provider)->getField();
 
-        if ($KATPERM) {
-            // --------------------- KATEGORIE WITH WRITE
-            $echo .= '
-                <tr>
-                    <td class="rex-table-icon">'.$category_icon.'</td>
-                    <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$category_id_field.'</td>
-                    <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
-                    <td class="rex-table-priority" data-title="'.rex_i18n::msg('header_priority').'">'.$category_priority.'</td>
-                    <td class="rex-table-action">'.$category_edit.'</td>
-                    <td class="rex-table-action">'.$category_delete.'</td>
-                    <td class="rex-table-action">'.$kat_status.'</td>
-                </tr>';
-        } elseif (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($i_category_id)) {
-            // --------------------- KATEGORIE WITH READ
-
-            $echo .= '
-                    <tr>
-                        <td class="rex-table-icon">'.$category_icon.'</td>
-                        <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$category_id_field.'</td>
-                        <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
-                        <td class="rex-table-priority" data-title="'.rex_i18n::msg('header_priority').'">'.$category_priority.'</td>
-                        <td class="rex-table-action">'.$category_edit.'</td>
-                        <td class="rex-table-action">'.$category_delete.'</td>
-                        <td class="rex-table-action">'.$kat_status.'</td>
-                    </tr>';
-        }
+        $echo .= '
+            <tr>
+                <td class="rex-table-icon">'.$category_icon.'</td>
+                <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$category_id_field.'</td>
+                <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
+                <td class="rex-table-priority" data-title="'.rex_i18n::msg('header_priority').'">'.$category_priority.'</td>
+                <td class="rex-table-action">'.$category_edit.'</td>
+                <td class="rex-table-action">'.$category_delete.'</td>
+                <td class="rex-table-action">'.$kat_status.'</td>
+            </tr>';
 
         $KAT->next();
     }
