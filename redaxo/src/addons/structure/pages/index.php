@@ -230,8 +230,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     $artFragment->setVar('pager', $artPager);
     echo $artFragment->parse('core/navigations/pagination.php');
 
-    $art_add_link = rex_structure_field_article_add::factory($article_provider)->setHiddenLabel(true);
-
     // ---------- READ DATA
     $sql->setQuery('SELECT *
                 FROM
@@ -277,7 +275,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
         $article_group = rex_structure_group::factory($article_provider);
         $article_group
-            ->setField('icon', rex_structure_field_article_icon::factory($article_provider), $art_add_link)
+            ->setField('icon', rex_structure_field_article_icon::factory($article_provider), rex_structure_field_article_add::factory($article_provider)->setHiddenLabel(true))
             ->setField('id', rex_structure_field_article_id::factory($article_provider))
             ->setField('article_name', rex_structure_field_article_name::factory($article_provider))
             ->setField('template', rex_structure_field_article_template::factory($article_provider), $tmpl_head)
@@ -287,7 +285,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
                 rex_structure_field_article_status::factory($article_provider),
                 rex_structure_field_article_delete::factory($article_provider),
                 rex_structure_field_article_edit::factory($article_provider),
-            ], rex_structure_field_article_head::factory($article_provider)->setKey('header_status'))
+            ], 'header_status')
         ;
 
         $echo_body .= $article_group->getGroupBody();
