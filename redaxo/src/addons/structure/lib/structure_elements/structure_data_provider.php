@@ -6,9 +6,6 @@
 
 class rex_structure_data_provider
 {
-    /**
-     * Traits
-     */
     use rex_factory_trait;
 
     /**
