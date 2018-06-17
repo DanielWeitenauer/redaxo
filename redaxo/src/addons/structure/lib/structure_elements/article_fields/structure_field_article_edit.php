@@ -119,29 +119,4 @@ class rex_structure_field_article_edit extends rex_structure_field
 
         return $fragment_modal->parse('structure/modal.php');
     }
-
-    /**
-     * @param int $selected_template_id
-     *
-     * @return string
-     */
-    protected function getTemplateSelect($selected_template_id)
-    {
-        if (!rex_addon::get('structure')->getPlugin('content')->isAvailable()) {
-            return '';
-        }
-
-        $select = new rex_template_select();
-        $select->setName('template_id');
-        $select->setSize(1);
-        $select->setStyle('class="form-control"');
-        $select->setSelected($selected_template_id);
-
-        return '
-            <dl class="rex-form-group form-group">
-                <dt><label for="article-name">'.rex_i18n::msg('header_template').'</label></dt>
-                <dd>'.$select->get().'</dd>
-            </dl>
-        ';
-    }
 }

@@ -103,4 +103,29 @@ abstract class rex_structure_field
 
         return $fragment->parse('structure/field.php');
     }
+
+    /**
+     * @param int $selected_template_id
+     *
+     * @return string
+     */
+    protected function getTemplateSelect($selected_template_id = -1)
+    {
+        if (!rex_addon::get('structure')->getPlugin('content')->isAvailable()) {
+            return '';
+        }
+
+        $select = new rex_template_select();
+        $select->setName('template_id');
+        $select->setSize(1);
+        $select->setStyle('class="form-control"');
+        $select->setSelected($selected_template_id);
+
+        return '
+            <dl class="rex-form-group form-group">
+                <dt><label for="article-name">'.rex_i18n::msg('header_template').'</label></dt>
+                <dd>'.$select->get().'</dd>
+            </dl>
+        ';
+    }
 }
