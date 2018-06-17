@@ -44,10 +44,6 @@ echo rex_view::clangSwitchAsButtons($context);
 // --------------------------------------------- Path
 require __DIR__ . '/../functions/function_rex_category.php';
 
-// -------------- STATUS_TYPE Map
-$catStatusTypes = rex_category_service::statusTypes();
-$artStatusTypes = rex_article_service::statusTypes();
-
 // --------------------------------------------- API MESSAGES
 echo rex_api_function::getMessage();
 
