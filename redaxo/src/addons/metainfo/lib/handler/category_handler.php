@@ -125,4 +125,6 @@ rex_extension::register('CAT_FORM_EDIT', [$catHandler, 'extendForm']);
 rex_extension::register('CAT_ADDED', [$catHandler, 'extendForm']);
 rex_extension::register('CAT_UPDATED', [$catHandler, 'extendForm']);
 
-rex_extension::register('CAT_FORM_BUTTONS', [$catHandler, 'renderToggleButton']);
+if (rex_string::versionCompare(rex_addon::get('structure')->getVersion(), '3.0.0-dev', '<')) {
+    rex_extension::register('CAT_FORM_BUTTONS', [$catHandler, 'renderToggleButton']);
+}

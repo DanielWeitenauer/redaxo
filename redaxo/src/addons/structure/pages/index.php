@@ -187,6 +187,7 @@ if ($KAT->getRows() > 0) {
             ->setSql($KAT);
 
         $kat_status = rex_structure_field_category_status::factory($category_provider)->getField();
+        $category_delete = rex_structure_field_category_delete::factory($category_provider)->getField();
 
         if ($KATPERM) {
             if (isset($edit_id) && $edit_id == $i_category_id && $function == 'edit_cat') {
@@ -228,9 +229,6 @@ if ($KAT->getRows() > 0) {
                 ]));
             } else {
                 // --------------------- KATEGORIE WITH WRITE
-
-                $category_delete = '<a href="' . $context->getUrl(['category-id' => $i_category_id, 'catstart' => $catstart] + rex_api_category_delete::getUrlParams()) . '" data-confirm="' . rex_i18n::msg('delete') . ' ?"><i class="rex-icon rex-icon-delete"></i> ' . rex_i18n::msg('delete') . '</a>';
-
                 $echo .= '
                     <tr>
                         ' . $kat_icon_td . '
@@ -238,7 +236,7 @@ if ($KAT->getRows() > 0) {
                         <td data-title="' . rex_i18n::msg('header_category') . '"><a href="' . $kat_link . '">' . htmlspecialchars($KAT->getValue('catname')) . '</a></td>
                         <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                         <td class="rex-table-action"><a href="' . $context->getUrl(['edit_id' => $i_category_id, 'function' => 'edit_cat', 'catstart' => $catstart]) . '"><i class="rex-icon rex-icon-edit"></i> ' . rex_i18n::msg('change') . '</a></td>
-                        <td class="rex-table-action">' . $category_delete . '</td>
+                        <td class="rex-table-action">'.$category_delete.'</td>
                         <td class="rex-table-action">'.$kat_status.'</td>
                     </tr>';
             }
@@ -252,7 +250,7 @@ if ($KAT->getRows() > 0) {
                         <td data-title="' . rex_i18n::msg('header_category') . '"><a href="' . $kat_link . '">' . $KAT->getValue('catname') . '</a></td>
                         <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                         <td class="rex-table-action"><span class="text-muted"><i class="rex-icon rex-icon-edit"></i> ' . rex_i18n::msg('change') . '</span></td>
-                        <td class="rex-table-action"><span class="text-muted"><i class="rex-icon rex-icon-delete"></i> ' . rex_i18n::msg('delete') . '</span></td>
+                        <td class="rex-table-action">'.$category_delete.'</td>
                         <td class="rex-table-action">'.$kat_status.'</td>
                     </tr>';
         }

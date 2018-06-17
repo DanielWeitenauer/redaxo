@@ -347,7 +347,6 @@ if ($article->getRows() == 1) {
         // ------------------------------------------ END: Slice add/edit/delete
 
         // ------------------------------------------ START: CONTENT HEAD MENUE
-
         $editPage = rex_be_controller::getPageObject('content/edit');
 
         foreach ($ctypes as $key => $val) {
