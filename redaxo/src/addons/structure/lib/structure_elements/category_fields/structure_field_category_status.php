@@ -10,9 +10,11 @@ class rex_structure_field_category_status extends rex_structure_field
     public function getField()
     {
         $category_id = $this->getDataProvider()->getCategoryId();
-        $user = rex::getUser();
+
         $sql = $this->getDataProvider()->getSql();
         $category_active_id = $sql->getValue('id');
+
+        $user = rex::getUser();
         $category_permission = $user->getComplexPerm('structure')->hasCategoryPerm($category_id);
 
         $status_key = $sql->getValue('status');
@@ -49,8 +51,7 @@ class rex_structure_field_category_status extends rex_structure_field
             else {
                 $field_params['attributes']['class'][] = 'text-muted disabled';
             }
-        } elseif (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_active_id)) {
-            // Inactive state
+        } elseif ($user->getComplexPerm('structure')->hasCategoryPerm($category_active_id)) {
             $field_params['attributes']['class'][] = 'text-muted disabled';
         }
 
