@@ -203,22 +203,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     $withTemplates = $this->getPlugin('content')->isAvailable();
     $tmpl_head = '';
     if ($withTemplates) {
-        $template_select = new rex_select();
-        $template_select->setName('template_id');
-        $template_select->setSize(1);
-        $template_select->setStyle('class="form-control"');
-
-        $templates = rex_template::getTemplatesForCategory($category_id);
-        if (count($templates) > 0) {
-            foreach ($templates as $t_id => $t_name) {
-                $template_select->addOption(rex_i18n::translate($t_name, false), $t_id);
-                $TEMPLATE_NAME[$t_id] = rex_i18n::translate($t_name);
-            }
-        } else {
-            $template_select->addOption(rex_i18n::msg('option_no_template'), '0');
-        }
-        $TEMPLATE_NAME[0] = rex_i18n::msg('template_default_name');
-        $tmpl_head = '<th>' . rex_i18n::msg('header_template') . '</th>';
+        $tmpl_head = rex_i18n::msg('header_template');
     }
 
     // --------------------- ARTIKEL LIST
@@ -245,7 +230,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     $artFragment->setVar('pager', $artPager);
     echo $artFragment->parse('core/navigations/pagination.php');
 
-    $art_add_link = rex_structure_field_article_add::factory($article_provider)->setHiddenLabel(true)->getField();
+    $art_add_link = rex_structure_field_article_add::factory($article_provider)->setHiddenLabel(true);
 
     // ---------- READ DATA
     $sql->setQuery('SELECT *
@@ -269,17 +254,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
     $echo .= '
             <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th class="rex-table-icon">'.$art_add_link.'</th>
-                        <th class="rex-table-id">' . rex_i18n::msg('header_id') . '</th>
-                        <th>' . rex_i18n::msg('header_article_name') . '</th>
-                        ' . $tmpl_head . '
-                        <th>' . rex_i18n::msg('header_date') . '</th>
-                        <th class="rex-table-priority">' . rex_i18n::msg('header_priority') . '</th>
-                        <th class="rex-table-action" colspan="3">' . rex_i18n::msg('header_status') . '</th>
-                    </tr>
-                </thead>
                 ';
 
     // tbody nur anzeigen, wenn später auch inhalt drinnen stehen wird
@@ -289,7 +263,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     }
 
     // --------------------- ARTIKEL LIST
-
+    $echo_body = '';
     for ($i = 0; $i < $sql->getRows(); ++$i) {
         $class_startarticle = '';
         if ($sql->getValue('startarticle') == 1) {
@@ -301,32 +275,27 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             ->setEditId($sql->getValue('id'))
             ->setSql($sql);
 
-        $article_status = rex_structure_field_article_status::factory($article_provider)->getField();
-        $article_delete = rex_structure_field_article_delete::factory($article_provider)->getField();
-        $article_edit = rex_structure_field_article_edit::factory($article_provider)->getField();
-        $article_name = rex_structure_field_article_name::factory($article_provider)->getField();
-        $article_icon = rex_structure_field_article_icon::factory($article_provider)->getField();
-        $article_id_field = rex_structure_field_article_id::factory($article_provider)->getField();
-        $article_template = rex_structure_field_article_template::factory($article_provider)->getField();
-        $article_create_date = rex_structure_field_article_create_date::factory($article_provider)->getField();
-        $article_priority = rex_structure_field_article_priority::factory($article_provider)->getField();
+        $article_group = rex_structure_group::factory($article_provider);
+        $article_group
+            ->setField('icon', rex_structure_field_article_icon::factory($article_provider), $art_add_link)
+            ->setField('id', rex_structure_field_article_id::factory($article_provider))
+            ->setField('article_name', rex_structure_field_article_name::factory($article_provider))
+            ->setField('template', rex_structure_field_article_template::factory($article_provider), $tmpl_head)
+            ->setField('date', rex_structure_field_article_create_date::factory($article_provider))
+            ->setField('priority', rex_structure_field_article_priority::factory($article_provider))
+            ->setField('action', [
+                rex_structure_field_article_status::factory($article_provider),
+                rex_structure_field_article_delete::factory($article_provider),
+                rex_structure_field_article_edit::factory($article_provider),
+            ], rex_structure_field_article_head::factory($article_provider)->setKey('header_status'))
+        ;
 
-        $echo .= '
-            <tr' . (($class_startarticle != '') ? ' class="' . trim($class_startarticle) . '"' : '') . '>
-                <td class="rex-table-icon">'.$article_icon.'</td>
-                <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$article_id_field.'</td>
-                <td data-title="' . rex_i18n::msg('header_article_name') . '">'.$article_name.'</td>
-                <td data-title="' . rex_i18n::msg('header_template') . '">'.$article_template.'</td>
-                <td data-title="' . rex_i18n::msg('header_date') . '">'.$article_create_date.'</td>
-                <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">'.$article_priority.'</td>
-                <td class="rex-table-action">'.$article_edit.'</td>
-                <td class="rex-table-action">'.$article_delete.'</td>
-                <td class="rex-table-action">'.$article_status.'</td>
-            </tr>
-        ';
+        $echo_body .= $article_group->getGroupBody();
 
         $sql->next();
     }
+
+    $echo .= $article_group->getGroupHead().$echo_body;
 
     // tbody nur anzeigen, wenn später auch inhalt drinnen stehen wird
     if ($sql->getRows() > 0 || $function == 'add_art') {

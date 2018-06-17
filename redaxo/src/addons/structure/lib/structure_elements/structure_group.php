@@ -1,91 +1,64 @@
 <?php
 /**
- * This class represents a single structure action column.
- * Structure action columns can contain multiple structure action fields
- * and an optional header.
- * Multiple structure action columns can be added to a structure action row.
+ * This class represents a structure group.
+ * A structure group can contain multiple structure body and header fields.
  *
- * @see rex_structure_action_field
- * @see rex_structure_action_row
+ * @see rex_structure_field
  * @package redaxo\structure
  */
 class rex_structure_group
 {
-    /**
-     * Traits
-     */
     use rex_factory_trait;
-    use rex_structure_trait_vars;
 
+    /**
+     * @var rex_structure_data_provider
+     */
+    protected $data_provider;
     /**
      * @var array
      */
-    protected $header = [];
+    protected $group_head = [];
     /**
-     * @var array
+     * qvar array
      */
-    protected $body = [];
+    protected $group_body = [];
 
     /**
-     * @param array $vars
+     * @param rex_structure_data_provider $data_provider
      *
      * @return static
      */
-    public static function factory($vars = [])
+    public static function factory(rex_structure_data_provider $data_provider)
     {
         $class = static::getFactoryClass();
 
-        return new $class($vars);
+        return new $class($data_provider);
     }
 
     /**
-     * @param array $vars
+     * @param rex_structure_data_provider $data_provider
      */
-    protected function __construct($vars = [])
+    protected function __construct(rex_structure_data_provider $data_provider)
     {
-        $this->setVars($vars);
+        $this->setDataProvider($data_provider);
     }
 
     /**
-     * @param array $fields
+     * @return rex_structure_data_provider
+     */
+    public function getDataProvider()
+    {
+        return $this->data_provider;
+    }
+
+    /**
+     * @param rex_structure_data_provider $data_provider
      *
      * @return $this
      */
-    public function setHeader(array $fields = [])
+    public function setDataProvider($data_provider)
     {
-        $this->header = $fields;
-
-        return $this;
-    }
-
-    /**
-     * @param array $fields
-     *
-     * @return $this
-     */
-    public function setBody(array $fields = [])
-    {
-        $this->body = $fields;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function clearHeader()
-    {
-        $this->header = [];
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function clearBody()
-    {
-        $this->body = [];
+        $this->data_provider = $data_provider;
 
         return $this;
     }
@@ -93,53 +66,43 @@ class rex_structure_group
     /**
      * @return array
      */
-    public function getHeader()
+    public function getGroupHead()
     {
-        return $this->header;
+        $fragment = new rex_fragment();
+        $fragment->setVar('group', $this->group_head, false);
+
+        return $fragment->parse('structure/group_article_table_head.php');
     }
 
     /**
      * @return array
      */
-    public function getBody()
+    public function getGroupBody()
     {
-        return $this->body;
+        $sql = $this->getDataProvider()->getSql();
+
+        $fragment = new rex_fragment();
+        $fragment->setVar('is_startarticle', $sql->getValue('startarticle') == 1, false);
+        $fragment->setVar('group', $this->group_body, false);
+
+        return $fragment->parse('structure/group_article_table_body.php');
     }
 
     /**
      * @param string $key
-     * @param rex_structure_field $field
+     * @param rex_structure_field|array $field_body
+     * @param rex_structure_field|array|null|string $field_head
      *
      * @return $this
      */
-    public function setHeaderField($key, rex_structure_field $field)
+    public function setField($key, $field_body, $field_head = null)
     {
-        $this->header[$key] = $field;
+        if (!isset($field_head)) {
+            $field_head = $key;
+        }
 
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param rex_structure_field $field
-     *
-     * @return $this
-     */
-    public function setBodyField($key, rex_structure_field $field)
-    {
-        $this->body[$key] = $field;
-
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return $this
-     */
-    public function unsetHeaderField($key)
-    {
-        unset($this->header[$key]);
+        $this->setFieldBody($key, $field_body);
+        $this->setFieldHead($key, $field_head);
 
         return $this;
     }
@@ -149,9 +112,10 @@ class rex_structure_group
      *
      * @return $this
      */
-    public function unsetBodyField($key)
+    public function unsetField($key)
     {
-        unset($this->body[$key]);
+        unset($this->group_head[$key]);
+        unset($this->group_body[$key]);
 
         return $this;
     }
@@ -161,38 +125,78 @@ class rex_structure_group
      *
      * @return bool
      */
-    public function hasHeaderField($key)
+    public function hasField($key)
     {
-        return isset($this->header[$key]);
+        return isset($this->group_body[$key]);
     }
 
     /**
      * @param string $key
      *
-     * @return bool
+     * @return array|null
      */
-    public function hasBodyField($key)
+    public function getField($key)
     {
-        return isset($this->body[$key]);
+        return $this->hasField($key) ? [
+            'head' => $this->group_head[$key],
+            'body' => $this->group_body[$key],
+        ] : [
+            'head' => null,
+            'body' => null,
+        ];
+    }
+
+    /**
+     * @param string $key
+     * @param rex_structure_field|array|string $field_head
+     *
+     * @return $this
+     */
+    public function setFieldHead($key, $field_head)
+    {
+        if (is_string($field_head)) {
+            $field_head = rex_structure_field_article_head::factory($this->getDataProvider())->setKey($field_head);
+        }
+
+        $this->group_head[$key] = $field_head;
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param rex_structure_field|array $field_body
+     *
+     * @return $this
+     */
+    public function setFieldBody($key, $field_body)
+    {
+        $this->group_body[$key] = $field_body;
+
+        if (!isset($this->group_head[$key])) {
+            $this->setFieldHead($key, $key);
+        }
+
+        return $this;
     }
 
     /**
      * @param string $key
      *
-     * @return rex_structure_action_field|null
+     * @return rex_structure_field|null
      */
-    public function getHeaderField($key)
+    public function getFieldHead($key)
     {
-        return $this->hasHeaderField($key) ? $this->header[$key] : null;
+        return isset($this->group_head[$key]) ? $this->group_head[$key] : null;
     }
 
     /**
      * @param string $key
      *
-     * @return rex_structure_action_field|null
+     * @return rex_structure_field|null
      */
-    public function getBodyField($key)
+    public function getFieldBody($key)
     {
-        return $this->hasBodyField($key) ? $this->body[$key] : null;
+        return isset($this->group_body[$key]) ? $this->group_body[$key] : null;
     }
 }
