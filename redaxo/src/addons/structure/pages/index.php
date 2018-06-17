@@ -459,14 +459,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     // --------------------- ARTIKEL LIST
 
     for ($i = 0; $i < $sql->getRows(); ++$i) {
-        if ($sql->getValue('id') == rex_article::getSiteStartArticleId()) {
-            $class = ' rex-icon-sitestartarticle';
-        } elseif ($sql->getValue('startarticle') == 1) {
-            $class = ' rex-icon-startarticle';
-        } else {
-            $class = ' rex-icon-article';
-        }
-
         $class_startarticle = '';
         if ($sql->getValue('startarticle') == 1) {
             $class_startarticle = ' rex-startarticle';
