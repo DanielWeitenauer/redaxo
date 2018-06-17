@@ -245,7 +245,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
     $article_provider = rex_structure_data_provider::factory();
     $article_provider->setSql($sql);
-    $artPager = $article_provider->getArtPager();
+    $artPager = $article_provider->getArticlePager();
     $artFragment = new rex_fragment();
     $artFragment->setVar('urlprovider', $context);
     $artFragment->setVar('pager', $artPager);

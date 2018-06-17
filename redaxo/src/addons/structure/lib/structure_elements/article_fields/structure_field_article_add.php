@@ -54,7 +54,7 @@ class rex_structure_field_article_add extends rex_structure_field
     protected function getForm()
     {
         $category_id = $this->getDataProvider()->getCategoryId();
-        $artpager = $this->getDataProvider()->getArtPager();
+        $artpager = $this->getDataProvider()->getArticlePager();
 
         // Button fragment
         $button_params = [

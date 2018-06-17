@@ -398,7 +398,7 @@ class rex_structure_data_provider
     /**
      * @return rex_pager
      */
-    public function getArtPager()
+    public function getArticlePager()
     {
         if (!isset($this->pager)) {
             $this->pager = new rex_pager(30, 'artstart');
