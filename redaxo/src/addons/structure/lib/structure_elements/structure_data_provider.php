@@ -235,7 +235,7 @@ class rex_structure_data_provider
     /**
      * @return int
      */
-    public function getArtStart()
+    public function getArtstart()
     {
         if (!isset($this->artstart)) {
             $this->artstart = rex_request('artstart', 'int');
@@ -259,7 +259,7 @@ class rex_structure_data_provider
     /**
      * @return int
      */
-    public function getCatStart()
+    public function getCatstart()
     {
         if (!isset($this->catstart)) {
             $this->catstart = rex_request('catstart', 'int');
