@@ -177,9 +177,6 @@ if ($KAT->getRows() > 0) {
     for ($i = 0; $i < $KAT->getRows(); ++$i) {
         $i_category_id = $KAT->getValue('id');
 
-        $kat_link = $context->getUrl(['category_id' => $i_category_id]);
-        $kat_icon_td = '<td class="rex-table-icon"><a href="' . $kat_link . '" title="' . htmlspecialchars($KAT->getValue('catname')) . '"><i class="rex-icon rex-icon-category"></i></a></td>';
-
         // These params are passed to the structure fields
         $category_provider = rex_structure_data_provider::factory();
         $category_provider->setSql($KAT);
@@ -188,12 +185,13 @@ if ($KAT->getRows() > 0) {
         $category_delete = rex_structure_field_category_delete::factory($category_provider)->getField();
         $category_edit = rex_structure_field_category_edit::factory($category_provider)->getField();
         $category_name = rex_structure_field_category_name::factory($category_provider)->getField();
+        $category_icon = rex_structure_field_category_icon::factory($category_provider)->getField();
 
         if ($KATPERM) {
             // --------------------- KATEGORIE WITH WRITE
             $echo .= '
                 <tr>
-                    ' . $kat_icon_td . '
+                    <td class="rex-table-icon">'.$category_icon.'</td>
                     <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $i_category_id . '</td>
                     <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
                     <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
@@ -206,7 +204,7 @@ if ($KAT->getRows() > 0) {
 
             $echo .= '
                     <tr>
-                        ' . $kat_icon_td . '
+                        <td class="rex-table-icon">'.$category_icon.'</td>
                         <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $i_category_id . '</td>
                         <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
                         <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
