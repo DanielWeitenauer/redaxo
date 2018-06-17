@@ -58,12 +58,6 @@ if ($category) {
     $cat_name = $category->getName();
 }
 
-$add_category = '';
-if ($KATPERM) {
-    $add_category = '<a href="' . $context->getUrl(['function' => 'add_cat', 'catstart' => $catstart]) . '"' . rex::getAccesskey(rex_i18n::msg('add_category'), 'add') . '><i class="rex-icon rex-icon-add-category"></i></a>';
-}
-
-$data_colspan = 5;
 
 // --------------------- Extension Point
 echo rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_HEADER', '', [
@@ -88,12 +82,16 @@ if (count($mountpoints) > 0 && $category_id == 0) {
 
 // --------------------- ADD PAGINATION
 
-$catPager = new rex_pager(30, 'catstart');
-$catPager->setRowCount($KAT->getValue('rowCount'));
+$category_provider = rex_structure_data_provider::factory();
+$category_provider->setSql($KAT);
+$catPager = $category_provider->getCategoryPager();
+
 $catFragment = new rex_fragment();
 $catFragment->setVar('urlprovider', $context);
 $catFragment->setVar('pager', $catPager);
 echo $catFragment->parse('core/navigations/pagination.php');
+
+$add_category = rex_structure_field_category_add::factory($category_provider)->setHiddenLabel(true)->getField();
 
 // --------------------- GET THE DATA
 
@@ -123,7 +121,7 @@ $echo .= '
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th class="rex-table-icon">' . $add_category . '</th>
+                        <th class="rex-table-icon">'.$add_category.'</th>
                         <th class="rex-table-id">' . rex_i18n::msg('header_id') . '</th>
                         <th>' . rex_i18n::msg('header_category') . '</th>
                         <th class="rex-table-priority">' . rex_i18n::msg('header_priority') . '</th>
@@ -139,37 +137,6 @@ if ($category_id != 0 && ($category = rex_category::get($category_id))) {
                     <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">&nbsp;</td>
                     <td class="rex-table-action" colspan="3">&nbsp;</td>
                 </tr>';
-}
-
-// --------------------- KATEGORIE ADD FORM
-
-if ($function == 'add_cat' && $KATPERM) {
-    $meta_buttons = rex_extension::registerPoint(new rex_extension_point('CAT_FORM_BUTTONS', '', [
-        'id' => $category_id,
-        'clang' => $clang,
-    ]));
-    $add_buttons = rex_api_category_add::getHiddenFields().'
-        <input type="hidden" name="parent-category-id" value="' . $category_id . '" />
-        <button class="btn btn-save" type="submit" name="category-add-button"' . rex::getAccesskey(rex_i18n::msg('add_category'), 'save') . '>' . rex_i18n::msg('add_category') . '</button>';
-
-    $class = 'mark';
-
-    $echo .= '
-                <tr class="' . $class . '">
-                    <td class="rex-table-icon"><i class="rex-icon rex-icon-category"></i></td>
-                    <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">-</td>
-                    <td data-title="' . rex_i18n::msg('header_category') . '"><input class="form-control" type="text" name="category-name" class="rex-js-autofocus" autofocus /></td>
-                    <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '"><input class="form-control" type="text" name="category-position" value="' . ($catPager->getRowCount() + 1) . '" /></td>
-                    <td class="rex-table-action">' . $meta_buttons . '</td>
-                    <td class="rex-table-action" colspan="2">' . $add_buttons . '</td>
-                </tr>';
-
-    // ----- EXTENSION POINT
-    $echo .= rex_extension::registerPoint(new rex_extension_point('CAT_FORM_ADD', '', [
-        'id' => $category_id,
-        'clang' => $clang,
-        'data_colspan' => ($data_colspan + 1),
-    ]));
 }
 
 // --------------------- KATEGORIE LIST

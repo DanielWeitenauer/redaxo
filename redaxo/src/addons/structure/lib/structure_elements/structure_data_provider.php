@@ -55,7 +55,7 @@ class rex_structure_data_provider
     /**
      * @var rex_pager
      */
-    protected $artpager;
+    protected $pager;
 
     /**
      * @return static
@@ -400,11 +400,24 @@ class rex_structure_data_provider
      */
     public function getArtPager()
     {
-        if (!isset($this->artpager)) {
-            $this->artpager = new rex_pager(30, 'artstart');
-            $this->artpager->setRowCount($this->getSql()->getValue('artCount'));
+        if (!isset($this->pager)) {
+            $this->pager = new rex_pager(30, 'artstart');
+            $this->pager->setRowCount($this->getSql()->getValue('artCount'));
         }
 
-        return $this->artpager;
+        return $this->pager;
+    }
+
+    /**
+     * @return rex_pager
+     */
+    public function getCategoryPager()
+    {
+        if (!isset($this->pager)) {
+            $this->pager = new rex_pager(30, 'catstart');
+            $this->pager->setRowCount($this->getSql()->getValue('rowCount'));
+        }
+
+        return $this->pager;
     }
 }
