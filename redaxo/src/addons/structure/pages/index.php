@@ -187,6 +187,7 @@ if ($KAT->getRows() > 0) {
         $kat_status = rex_structure_field_category_status::factory($category_provider)->getField();
         $category_delete = rex_structure_field_category_delete::factory($category_provider)->getField();
         $category_edit = rex_structure_field_category_edit::factory($category_provider)->getField();
+        $category_name = rex_structure_field_category_name::factory($category_provider)->getField();
 
         if ($KATPERM) {
             // --------------------- KATEGORIE WITH WRITE
@@ -194,7 +195,7 @@ if ($KAT->getRows() > 0) {
                 <tr>
                     ' . $kat_icon_td . '
                     <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $i_category_id . '</td>
-                    <td data-title="' . rex_i18n::msg('header_category') . '"><a href="' . $kat_link . '">' . htmlspecialchars($KAT->getValue('catname')) . '</a></td>
+                    <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
                     <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                     <td class="rex-table-action">'.$category_edit.'</td>
                     <td class="rex-table-action">'.$category_delete.'</td>
@@ -207,7 +208,7 @@ if ($KAT->getRows() > 0) {
                     <tr>
                         ' . $kat_icon_td . '
                         <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $i_category_id . '</td>
-                        <td data-title="' . rex_i18n::msg('header_category') . '"><a href="' . $kat_link . '">' . $KAT->getValue('catname') . '</a></td>
+                        <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
                         <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                         <td class="rex-table-action">'.$category_edit.'</td>
                         <td class="rex-table-action">'.$category_delete.'</td>
