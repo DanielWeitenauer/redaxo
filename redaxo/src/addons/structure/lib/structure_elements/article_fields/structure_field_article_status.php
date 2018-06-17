@@ -37,7 +37,6 @@ class rex_structure_field_article_status extends rex_structure_field
         if (!$article->isStartArticle() && ($user->hasPerm('publishArticle[]') || $user->getComplexPerm('structure')->hasCategoryPerm($category_id))) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
-                'rex-api-call' => 'article_status',
                 'article_id' => $edit_id,
                 rex_api_article_status::getUrlParams(),
             ]);
