@@ -373,6 +373,14 @@ class rex_structure_data_provider
     }
 
     /**
+     * @return bool
+     */
+    public function getCategoryPermission()
+    {
+        return rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($this->getCategoryId());
+    }
+
+    /**
      * @return array
      */
     public function getUrlParams()

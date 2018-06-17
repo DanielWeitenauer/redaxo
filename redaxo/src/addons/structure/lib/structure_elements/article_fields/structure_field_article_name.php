@@ -10,8 +10,10 @@ class rex_structure_field_article_name extends rex_structure_field
     public function getField()
     {
         $edit_id = $this->getDataProvider()->getEditId();
-        $category_id = rex_article::get($edit_id)->getCategoryId();
+
         $sql = $this->getDataProvider()->getSql();
+
+        $category_permission = $this->getDataProvider()->getCategoryPermission();
 
         $field_params = [
             'label' => htmlspecialchars($sql->getValue('name')),
@@ -23,7 +25,7 @@ class rex_structure_field_article_name extends rex_structure_field
         ];
 
         // Active state
-        if (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+        if ($category_permission) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
                 'page' => 'content/edit',

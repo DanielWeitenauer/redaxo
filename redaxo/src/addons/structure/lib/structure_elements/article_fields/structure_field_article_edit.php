@@ -12,7 +12,8 @@ class rex_structure_field_article_edit extends rex_structure_field
         $edit_id = $this->getDataProvider()->getEditId();
         $function = $this->getDataProvider()->getFunction();
         $article_id = $this->getDataProvider()->getArticleId();
-        $user = rex::getUser();
+
+        $category_permission = $this->getDataProvider()->getCategoryPermission();
 
         $field_params = [
             'hidden_label' => $this->isHiddenLabel(),
@@ -28,7 +29,7 @@ class rex_structure_field_article_edit extends rex_structure_field
         ];
 
         // Active state
-        if ($user->getComplexPerm('structure')->hasCategoryPerm($edit_id)) {
+        if ($category_permission) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
                 'article_id' => $edit_id,
@@ -44,7 +45,7 @@ class rex_structure_field_article_edit extends rex_structure_field
 
         $return = $this->getFragment($field_params);
         // The form fields are injected after the field
-        if ($function == 'edit_art' && $edit_id == $article_id && $user->getComplexPerm('structure')->hasCategoryPerm($edit_id)) {
+        if ($category_permission && $function == 'edit_art' && $edit_id == $article_id) {
             $return .= $this->getForm();
         }
 

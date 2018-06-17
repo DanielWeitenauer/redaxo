@@ -15,7 +15,7 @@ class rex_structure_field_category_status extends rex_structure_field
         $category_active_id = $sql->getValue('id');
 
         $user = rex::getUser();
-        $category_permission = $user->getComplexPerm('structure')->hasCategoryPerm($category_id);
+        $category_permission = $this->getDataProvider()->getCategoryPermission();
 
         $status_key = $sql->getValue('status');
         $status_types = rex_category_service::statusTypes();

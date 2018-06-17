@@ -10,9 +10,10 @@ class rex_structure_field_article_delete extends rex_structure_field
     public function getField()
     {
         $edit_id = $this->getDataProvider()->getEditId();
-        $article = rex_article::get($edit_id);
-        $category_id = $article->getCategoryId();
-        $user = rex::getUser();
+
+        $sql = $this->getDataProvider()->getSql();
+
+        $category_permission = $this->getDataProvider()->getCategoryPermission();
 
         $field_params = [
             'label' => rex_i18n::msg('delete'),
@@ -28,13 +29,10 @@ class rex_structure_field_article_delete extends rex_structure_field
         ];
 
         // Active state
-        if (!$article->isStartArticle() && $user->getComplexPerm('structure')->hasCategoryPerm($category_id)) {
+        if ($sql->getValue('startarticle') != 1 && $category_permission) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
-                'page' => 'structure',
-                'rex-api-call' => 'article_delete',
                 'article_id' => $edit_id,
-                'category_id' => $category_id,
                 rex_api_article_delete::getUrlParams(),
             ]);
             $field_params['url'] = $context->getUrl($url_params, false);

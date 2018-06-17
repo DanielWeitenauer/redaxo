@@ -10,11 +10,13 @@ class rex_structure_field_article_status extends rex_structure_field
     public function getField()
     {
         $edit_id = $this->getDataProvider()->getEditId();
-        $article = rex_article::get($edit_id);
-        $category_id = $article->getCategoryId();
-        $user = rex::getUser();
 
-        $status_key = $article->getValue('status');
+        $sql = $this->getDataProvider()->getSql();
+
+        $user = rex::getUser();
+        $category_permission = $this->getDataProvider()->getCategoryPermission();
+
+        $status_key = $sql->getValue('status');
         $status_types = rex_article_service::statusTypes();
         $status_name = $status_types[$status_key][0];
         $status_class = $status_types[$status_key][1];
@@ -34,7 +36,7 @@ class rex_structure_field_article_status extends rex_structure_field
         ];
 
         // Active state
-        if (!$article->isStartArticle() && ($user->hasPerm('publishArticle[]') || $user->getComplexPerm('structure')->hasCategoryPerm($category_id))) {
+        if (!$sql->getValue('startarticle') == 1 && $category_permission && $user->hasPerm('publishArticle[]')) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
                 'article_id' => $edit_id,

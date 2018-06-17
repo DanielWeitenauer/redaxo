@@ -15,7 +15,7 @@ class rex_structure_field_category_icon extends rex_structure_field
         $category_active_id = $sql->getValue('id');
 
         $user = rex::getUser();
-        $category_permission = $user->getComplexPerm('structure')->hasCategoryPerm($category_id);
+        $category_permission = $this->getDataProvider()->getCategoryPermission();
 
         $field_params = [
             'attributes' => [
