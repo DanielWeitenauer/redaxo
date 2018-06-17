@@ -9,7 +9,13 @@ class rex_structure_field_category_delete extends rex_structure_field
      */
     public function getField()
     {
-        $edit_id = $this->getDataProvider()->getEditId();
+        $category_id = $this->getDataProvider()->getCategoryId();
+
+        $sql = $this->getDataProvider()->getSql();
+        $category_active_id = $sql->getValue('id');
+
+        $user = rex::getUser();
+        $category_permission = $user->getComplexPerm('structure')->hasCategoryPerm($category_id);
 
         $field_params = [
             'hidden_label' => $this->isHiddenLabel(),
@@ -25,18 +31,17 @@ class rex_structure_field_category_delete extends rex_structure_field
         ];
 
         // Active state
-        if (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($edit_id)) {
+        if ($category_permission) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
-                'rex-api-call' => 'category_delete',
-                'category-id' => $edit_id,
+                'category-id' => $category_active_id,
                 rex_api_category_delete::getUrlParams(),
             ]);
             $field_params['url'] = $context->getUrl($url_params, false);
             $field_params['attributes']['class'][] = 'btn-default';
         }
         // Inactive state
-        else {
+        elseif ($user->getComplexPerm('structure')->hasCategoryPerm($category_active_id)) {
             $field_params['attributes']['class'][] = 'text-muted disabled';
         }
 
