@@ -186,13 +186,14 @@ if ($KAT->getRows() > 0) {
         $category_edit = rex_structure_field_category_edit::factory($category_provider)->getField();
         $category_name = rex_structure_field_category_name::factory($category_provider)->getField();
         $category_icon = rex_structure_field_category_icon::factory($category_provider)->getField();
+        $category_id_field = rex_structure_field_category_id::factory($category_provider)->getField();
 
         if ($KATPERM) {
             // --------------------- KATEGORIE WITH WRITE
             $echo .= '
                 <tr>
                     <td class="rex-table-icon">'.$category_icon.'</td>
-                    <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $i_category_id . '</td>
+                    <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$category_id_field.'</td>
                     <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
                     <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                     <td class="rex-table-action">'.$category_edit.'</td>
@@ -205,7 +206,7 @@ if ($KAT->getRows() > 0) {
             $echo .= '
                     <tr>
                         <td class="rex-table-icon">'.$category_icon.'</td>
-                        <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">' . $i_category_id . '</td>
+                        <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$category_id_field.'</td>
                         <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
                         <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                         <td class="rex-table-action">'.$category_edit.'</td>
