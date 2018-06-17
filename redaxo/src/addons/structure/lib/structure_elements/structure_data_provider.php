@@ -335,10 +335,10 @@ class rex_structure_data_provider
     {
         if (!($this->context instanceof rex_context)) {
             $this->context = new rex_context([
-                'page'        => 'structure',
+                'page' => 'structure',
                 'category_id' => $this->getCategoryId(),
-                'article_id'  => $this->getArticleId(),
-                'clang'       => $this->getClangId(),
+                'article_id' => $this->getArticleId(),
+                'clang' => $this->getClangId(),
             ]);
         }
 
