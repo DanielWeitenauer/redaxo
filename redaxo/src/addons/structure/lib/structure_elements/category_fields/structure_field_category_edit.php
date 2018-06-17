@@ -11,7 +11,6 @@ class rex_structure_field_category_edit extends rex_structure_field
     {
         $edit_id = $this->getDataProvider()->getEditId();
         $function = $this->getDataProvider()->getFunction();
-        $category_id = $this->getDataProvider()->getCategoryId();
 
         $sql = $this->getDataProvider()->getSql();
         $category_active_id = $sql->getValue('id');
@@ -41,7 +40,7 @@ class rex_structure_field_category_edit extends rex_structure_field
             ]);
             $field_params['url'] = $context->getUrl($url_params, false);
             $field_params['attributes']['class'][] = 'btn-default';
-        } elseif (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_active_id)) {
+        } elseif ($user->getComplexPerm('structure')->hasCategoryPerm($category_active_id)) {
             // Inactive state
             $field_params['attributes']['class'][] = 'text-muted disabled';
         }
