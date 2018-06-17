@@ -6,16 +6,13 @@ class rex_structure_field_article_status extends rex_structure_field
 {
     /**
      * @return string
-     * @throws rex_exception
      */
     public function getField()
     {
-        $article_id = $this->getVar('edit_id');
-        $article = rex_article::get($article_id);
+        $edit_id = $this->getDataProvider()->getEditId();
+        $article = rex_article::get($edit_id);
         $category_id = $article->getCategoryId();
         $user = rex::getUser();
-        /** @var rex_context $context */
-        $context = $this->getVar('context');
 
         $status_key = $article->getValue('status');
         $status_types = rex_article_service::statusTypes();
@@ -24,11 +21,12 @@ class rex_structure_field_article_status extends rex_structure_field
         $status_icon = $status_types[$status_key][2];
 
         $field_params = [
-            $this->hasVar('hidden_label') && $this->getVar('hidden_label') ? 'hidden_label' : 'label' => $status_name,
+            'label' => $status_name,
+            'hidden_label' => $this->isHiddenLabel(),
             'icon' => 'rex-icon '.$status_icon,
             'attributes' => [
                 'class' => [
-                    $this->hasVar('class') ? $this->getVar('class') : 'btn',
+                    'btn',
                     $status_class,
                 ],
                 'title' => $status_name,
@@ -37,9 +35,10 @@ class rex_structure_field_article_status extends rex_structure_field
 
         // Active state
         if (!$article->isStartArticle() && ($user->hasPerm('publishArticle[]') || $user->getComplexPerm('structure')->hasCategoryPerm($category_id))) {
-            $url_params = array_merge($this->getVar('url_params'), [
+            $context = $this->getDataProvider()->getContext();
+            $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
                 'rex-api-call' => 'article_status',
-                'article_id' => $article_id,
+                'article_id' => $edit_id,
                 rex_api_article_status::getUrlParams(),
             ]);
             $field_params['url'] = $context->getUrl($url_params, false);

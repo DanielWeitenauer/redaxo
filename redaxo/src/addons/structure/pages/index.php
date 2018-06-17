@@ -4,63 +4,31 @@
  * @package redaxo5
  */
 
+$data_provider = rex_structure_data_provider::factory();
+
 // basic request vars
-$category_id = rex_request('category_id', 'int');
-$article_id = rex_request('article_id', 'int');
-$clang = rex_request('clang', 'int');
-$ctype = rex_request('ctype', 'int');
+$category_id = $data_provider->getCategoryId();
+$article_id = $data_provider->getArticleId();
+$clang = $data_provider->getClangId();
+$ctype = $data_provider->getClangId();
 
 // additional request vars
-$artstart = rex_request('artstart', 'int');
-$catstart = rex_request('catstart', 'int');
-$edit_id = rex_request('edit_id', 'int');
-$function = rex_request('function', 'string');
+$artstart = $data_provider->getArtStart();
+$catstart = $data_provider->getCatStart();
+$edit_id = $data_provider->getEditId();
+$function = $data_provider->getFunction();
 
 $info = '';
 $warning = '';
 
-$category_id = rex_category::get($category_id) ? $category_id : 0;
-$article_id = rex_article::get($article_id) ? $article_id : 0;
-$clang = rex_clang::exists($clang) ? $clang : rex_clang::getStartId();
-
 // --------------------------------------------- Mountpoints
 
-$mountpoints = rex::getUser()->getComplexPerm('structure')->getMountpoints();
-if (count($mountpoints) == 1 && $category_id == 0) {
-    // Nur ein Mointpoint -> Sprung in die Kategory
-    $category_id = current($mountpoints);
-}
+$mountpoints = $data_provider->getMountpoints();
 
 // --------------------------------------------- Rechte prüfen
 $KATPERM = rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($category_id);
 
-$stop = false;
-if (rex_clang::count() > 1) {
-    if (!rex::getUser()->getComplexPerm('clang')->hasPerm($clang)) {
-        $stop = true;
-        foreach (rex_clang::getAllIds() as $key) {
-            if (rex::getUser()->getComplexPerm('clang')->hasPerm($key)) {
-                $clang = $key;
-                $stop = false;
-                break;
-            }
-        }
-
-        if ($stop) {
-            echo rex_view::error('You have no permission to this area');
-            exit;
-        }
-    }
-} else {
-    $clang = rex_clang::getStartId();
-}
-
-$context = new rex_context([
-    'page' => 'structure',
-    'category_id' => $category_id,
-    'article_id' => $article_id,
-    'clang' => $clang,
-]);
+$context = $data_provider->getContext();
 
 // --------------------- Extension Point
 echo rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_HEADER_PRE', '', [
@@ -465,28 +433,20 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         }
 
         // These params are passed to the structure fields
-        $article_vars = [
-            'category' => $category,
-            'edit_id' => $sql->getValue('id'),
-            'sql' => $sql,
-            'pager' => $artPager,
-            'clang' => $clang,
-            'context' => $context,
-            'url_params' => [
-                'artstart' => $artstart,
-                'catstart' => $catstart,
-            ],
-        ];
+        $article_provider = rex_structure_data_provider::factory();
+        $article_provider
+            ->setEditId($sql->getValue('id'))
+            ->setSql($sql);
 
-        $article_status = rex_structure_field_article_status::factory($article_vars)->getField();
-        $article_delete = rex_structure_field_article_delete::factory($article_vars)->getField();
-        $article_edit = rex_structure_field_article_edit::factory($article_vars)->getField();
-        $article_name = rex_structure_field_article_name::factory($article_vars)->getField();
-        $article_icon = rex_structure_field_article_icon::factory($article_vars)->getField();
-        $article_id_field = rex_structure_field_article_id::factory($article_vars)->getField();
-        $article_template = rex_structure_field_article_template::factory($article_vars)->getField();
-        $article_create_date = rex_structure_field_article_create_date::factory($article_vars)->getField();
-        $article_priority = rex_structure_field_article_priority::factory($article_vars)->getField();
+        $article_status = rex_structure_field_article_status::factory($article_provider)->getField();
+        $article_delete = rex_structure_field_article_delete::factory($article_provider)->getField();
+        $article_edit = rex_structure_field_article_edit::factory($article_provider)->getField();
+        $article_name = rex_structure_field_article_name::factory($article_provider)->getField();
+        $article_icon = rex_structure_field_article_icon::factory($article_provider)->getField();
+        $article_id_field = rex_structure_field_article_id::factory($article_provider)->getField();
+        $article_template = rex_structure_field_article_template::factory($article_provider)->getField();
+        $article_create_date = rex_structure_field_article_create_date::factory($article_provider)->getField();
+        $article_priority = rex_structure_field_article_priority::factory($article_provider)->getField();
 
         $echo .= '
             <tr' . (($class_startarticle != '') ? ' class="' . trim($class_startarticle) . '"' : '') . '>

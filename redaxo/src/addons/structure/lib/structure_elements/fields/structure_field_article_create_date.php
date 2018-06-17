@@ -10,7 +10,7 @@ class rex_structure_field_article_create_date extends rex_structure_field
      */
     public function getField()
     {
-        $sql = $this->getSql();
+        $sql = $this->getDataProvider()->getSql();
         $date = $sql->getDateTimeValue('createdate');
 
         $field_params = [
@@ -24,23 +24,5 @@ class rex_structure_field_article_create_date extends rex_structure_field
         ];
 
         return $this->getFragment($field_params);
-    }
-
-    /**
-     * @return rex_sql
-     * @throws rex_sql_exception
-     */
-    protected function getSql()
-    {
-        if ($this->hasVar('sql') instanceof rex_sql) {
-            return $this->getVar('sql');
-        }
-
-        $sql = rex_sql::factory();
-        $sql->setQuery('SELECT * FROM '.rex::getTable('article').' WHERE id = ?', [
-            $this->getVar('edit_id')
-        ]);
-
-        return $sql;
     }
 }

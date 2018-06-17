@@ -10,30 +10,35 @@
  */
 abstract class rex_structure_field
 {
-    /**
-     * Traits
-     */
     use rex_factory_trait;
-    use rex_structure_trait_vars;
 
     /**
-     * @param array $vars
+     * @var rex_structure_data_provider
+     */
+    protected $data_provider;
+    /**
+     * @var bool
+     */
+    protected $hidden_label = false;
+
+    /**
+     * @param rex_structure_data_provider $data_provider
      *
      * @return static
      */
-    public static function factory($vars = [])
+    public static function factory(rex_structure_data_provider $data_provider)
     {
         $class = static::getFactoryClass();
 
-        return new $class($vars);
+        return new $class($data_provider);
     }
 
     /**
-     * @param array $vars
+     * @param rex_structure_data_provider $data_provider
      */
-    protected function __construct($vars = [])
+    protected function __construct(rex_structure_data_provider $data_provider)
     {
-        $this->setVars($vars);
+        $this->setDataProvider($data_provider);
     }
 
     /**
@@ -42,21 +47,59 @@ abstract class rex_structure_field
      * link or informational text.
      *
      * @return string
-     * @throws rex_exception
      */
     abstract public function getField();
+
+    /**
+     * @return rex_structure_data_provider
+     */
+    public function getDataProvider()
+    {
+        return $this->data_provider;
+    }
+
+    /**
+     * @param rex_structure_data_provider $data_provider
+     *
+     * @return $this
+     */
+    public function setDataProvider($data_provider)
+    {
+        $this->data_provider = $data_provider;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $hidden_label
+     *
+     * @return $this
+     */
+    public function setHiddenLabel($hidden_label)
+    {
+        $this->hidden_label = (bool) $hidden_label;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHiddenLabel()
+    {
+        return $this->hidden_label;
+    }
 
     /**
      * @param array $field_params
      *
      * @return string
-     * @throws rex_exception
      */
     protected function getFragment(array $field_params = [])
     {
-        $fragment = new rex_fragment(array_merge($this->getVars(), [
-            'field' => $field_params,
-        ]));
+        $fragment = new rex_fragment([
+            'field_params' => $field_params,
+        ]);
 
         return $fragment->parse('structure/field.php');
     }

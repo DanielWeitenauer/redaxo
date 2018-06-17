@@ -6,20 +6,17 @@ class rex_structure_field_article_edit extends rex_structure_field
 {
     /**
      * @return string
-     * @throws rex_exception
      */
     public function getField()
     {
-        $edit_id = $this->getVar('edit_id');
+        $edit_id = $this->getDataProvider()->getEditId();
         $user = rex::getUser();
-        /** @var rex_context $context */
-        $context = $this->getVar('context');
-        $function = rex_request('function', 'string');
-        $article_id = rex_request('article_id', 'int');
-        $article_id = rex_article::get($article_id) ? $article_id : 0;
+        $function = $this->getDataProvider()->getFunction();
+        $article_id = $this->getDataProvider()->getArticleId();
 
         $field_params = [
-            $this->hasVar('hidden_label') && $this->getVar('hidden_label') ? 'hidden_label' : 'label' => rex_i18n::msg('change'),
+            'hidden_label' => $this->isHiddenLabel(),
+            'label' => rex_i18n::msg('change'),
             'icon' => 'rex-icon rex-icon-edit',
             'attributes' => [
                 'class' => [
@@ -32,7 +29,8 @@ class rex_structure_field_article_edit extends rex_structure_field
 
         // Active state
         if ($user->getComplexPerm('structure')->hasCategoryPerm($edit_id)) {
-            $url_params = array_merge($this->getVar('url_params'), [
+            $context = $this->getDataProvider()->getContext();
+            $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
                 'article_id' => $edit_id,
                 'function' => 'edit_art',
             ]);
@@ -59,17 +57,17 @@ class rex_structure_field_article_edit extends rex_structure_field
      */
     protected function getForm()
     {
-        $article_id = $this->getVar('edit_id');
-        $article = rex_article::get($article_id);
+        $edit_id = $this->getDataProvider()->getEditId();
+        $article = rex_article::get($edit_id);
         $category_id = $article->getCategoryId();
-        $sql = $this->getSql();
-        /** @var rex_context $context */
-        $context = $this->getVar('context');
-        $url_params = array_merge($this->getVar('url_params'), [
+        $sql = $this->getDataProvider()->getSql();
+        $context = $this->getDataProvider()->getContext();
+        $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
             'category_id' => $category_id,
-            'article_id' => $article_id,
+            'article_id' => $edit_id,
         ]);
 
+        // Save button
         $button_params = [
             'button' => [
                 'label' => rex_i18n::msg('article_save'),
@@ -83,18 +81,21 @@ class rex_structure_field_article_edit extends rex_structure_field
                 ],
             ],
         ];
+
         if (rex::getProperty('use_accesskeys')) {
             $access_keys = (array) rex::getProperty('accesskeys', []);
             $button_params['button']['attributes']['accesskey'] = $access_keys['save'];
             $button_params['button']['attributes']['title'] .= ' ['.$access_keys['save'].']';
         }
+
         $fragment_button = new rex_fragment([
             'buttons' => $button_params,
         ]);
 
+        // Modal
         $fragment_modal = new rex_fragment([
-            'modal_id' => 'article-edit-'.$article_id,
-            'modal_title_id' => 'article-edit-title'.$article_id,
+            'modal_id' => 'article-edit-'.$edit_id,
+            'modal_title_id' => 'article-edit-title'.$edit_id,
             'modal_url' => $context->getUrl($url_params, false),
             'modal_title' => rex_i18n::msg('article_edit'),
             'modal_body' => '
@@ -151,23 +152,5 @@ class rex_structure_field_article_edit extends rex_structure_field
                 <dd>'.$select->get().'</dd>
             </dl>
         ';
-    }
-
-    /**
-     * @return rex_sql
-     * @throws rex_sql_exception
-     */
-    protected function getSql()
-    {
-        if ($this->hasVar('sql') instanceof rex_sql) {
-            return $this->getVar('sql');
-        }
-
-        $sql = rex_sql::factory();
-        $sql->setQuery('SELECT * FROM '.rex::getTable('article').' WHERE id = ?', [
-            $this->getVar('edit_id')
-        ]);
-
-        return $sql;
     }
 }
