@@ -6,7 +6,6 @@ class rex_structure_field_article_create_date extends rex_structure_field
 {
     /**
      * @return string
-     * @throws rex_exception
      */
     public function getField()
     {

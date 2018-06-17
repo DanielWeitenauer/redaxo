@@ -53,7 +53,6 @@ class rex_structure_field_article_edit extends rex_structure_field
 
     /**
      * @return string
-     * @throws rex_exception
      */
     protected function getForm()
     {
