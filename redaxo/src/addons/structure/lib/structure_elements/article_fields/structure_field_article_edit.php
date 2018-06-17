@@ -10,9 +10,9 @@ class rex_structure_field_article_edit extends rex_structure_field
     public function getField()
     {
         $edit_id = $this->getDataProvider()->getEditId();
-        $user = rex::getUser();
         $function = $this->getDataProvider()->getFunction();
         $article_id = $this->getDataProvider()->getArticleId();
+        $user = rex::getUser();
 
         $field_params = [
             'hidden_label' => $this->isHiddenLabel(),
@@ -57,14 +57,7 @@ class rex_structure_field_article_edit extends rex_structure_field
     protected function getForm()
     {
         $edit_id = $this->getDataProvider()->getEditId();
-        $article = rex_article::get($edit_id);
-        $category_id = $article->getCategoryId();
         $sql = $this->getDataProvider()->getSql();
-        $context = $this->getDataProvider()->getContext();
-        $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
-            'category_id' => $category_id,
-            'article_id' => $edit_id,
-        ]);
 
         // Save button
         $button_params = [
@@ -94,8 +87,7 @@ class rex_structure_field_article_edit extends rex_structure_field
         // Modal
         $fragment_modal = new rex_fragment([
             'modal_id' => 'article-edit-'.$edit_id,
-            'modal_title_id' => 'article-edit-title'.$edit_id,
-            'modal_url' => $context->getUrl($url_params, false),
+            'modal_title_id' => 'article-edit-title-'.$edit_id,
             'modal_title' => rex_i18n::msg('article_edit'),
             'modal_body' => '
                 '.rex_api_article_edit::getHiddenFields().'
@@ -107,7 +99,7 @@ class rex_structure_field_article_edit extends rex_structure_field
                         </dl>
                         <dl class="rex-form-group form-group">
                             <dt><label for="article-name">'.rex_i18n::msg('header_article_name').'</label></dt>
-                            <dd><input class="form-control" type="text" name="article-name" value="'.htmlspecialchars($sql->getValue('name')).'" autofocus /></dd>
+                            <dd><input class="form-control rex-js-autofocus" type="text" name="article-name" value="'.htmlspecialchars($sql->getValue('name')).'" autofocus /></dd>
                         </dl>
                         '.$this->getTemplateSelect($sql->getValue('template_id')).'
                         <dl class="rex-form-group form-group">
@@ -125,7 +117,6 @@ class rex_structure_field_article_edit extends rex_structure_field
         ]);
 
         return $fragment_modal->parse('structure/modal.php');
-
     }
 
     /**
