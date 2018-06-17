@@ -261,10 +261,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     }
 
     // --------------------- ARTIKEL LIST
-    $art_add_link = '';
-    if ($KATPERM) {
-        $art_add_link = '<a href="' . $context->getUrl(['function' => 'add_art', 'artstart' => $artstart]) . '"' . rex::getAccesskey(rex_i18n::msg('article_add'), 'add_2') . '><i class="rex-icon rex-icon-add-article"></i></a>';
-    }
 
     // ---------- COUNT DATA
     $sql = rex_sql::factory();
@@ -280,12 +276,15 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
 
     // --------------------- ADD PAGINATION
 
-    $artPager = new rex_pager(30, 'artstart');
-    $artPager->setRowCount($sql->getValue('artCount'));
+    $article_provider = rex_structure_data_provider::factory();
+    $article_provider->setSql($sql);
+    $artPager = $article_provider->getArtPager();
     $artFragment = new rex_fragment();
     $artFragment->setVar('urlprovider', $context);
     $artFragment->setVar('pager', $artPager);
     echo $artFragment->parse('core/navigations/pagination.php');
+
+    $art_add_link = rex_structure_field_article_add::factory($article_provider)->setHiddenLabel(true)->getField();
 
     // ---------- READ DATA
     $sql->setQuery('SELECT *
@@ -311,7 +310,7 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th class="rex-table-icon">' . $art_add_link . '</th>
+                        <th class="rex-table-icon">'.$art_add_link.'</th>
                         <th class="rex-table-id">' . rex_i18n::msg('header_id') . '</th>
                         <th>' . rex_i18n::msg('header_article_name') . '</th>
                         ' . $tmpl_head . '
@@ -328,41 +327,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
                     ';
     }
 
-    // --------------------- ARTIKEL ADD FORM
-    if ($function == 'add_art' && $KATPERM) {
-        $tmpl_td = '';
-        if ($withTemplates) {
-            $selectedTemplate = 0;
-            if ($category_id) {
-                // template_id vom Startartikel erben
-                $sql2 = rex_sql::factory();
-                $sql2->setQuery('SELECT template_id FROM ' . rex::getTablePrefix() . 'article WHERE id=' . $category_id . ' AND clang_id=' . $clang . ' AND startarticle=1');
-                if ($sql2->getRows() == 1) {
-                    $selectedTemplate = $sql2->getValue('template_id');
-                }
-            }
-            if (!$selectedTemplate || !isset($TEMPLATE_NAME[$selectedTemplate])) {
-                $selectedTemplate = rex_template::getDefaultId();
-            }
-            if ($selectedTemplate && isset($TEMPLATE_NAME[$selectedTemplate])) {
-                $template_select->setSelected($selectedTemplate);
-            }
-
-            $tmpl_td = '<td data-title="' . rex_i18n::msg('header_template') . '">' . $template_select->get() . '</td>';
-        }
-
-        $echo .= '<tr class="mark">
-                    <td class="rex-table-icon"><i class="rex-icon rex-icon-article"></i></td>
-                    <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">-</td>
-                    <td data-title="' . rex_i18n::msg('header_article_name') . '"><input class="form-control" type="text" name="article-name" autofocus /></td>
-                    ' . $tmpl_td . '
-                    <td data-title="' . rex_i18n::msg('header_date') . '">' . rex_formatter::strftime(time(), 'date') . '</td>
-                    <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '"><input class="form-control" type="text" name="article-position" value="' . ($artPager->getRowCount() + 1) . '" /></td>
-                    <td class="rex-table-action" colspan="3">'.rex_api_article_add::getHiddenFields().'<button class="btn btn-save" type="submit" name="artadd_function"' . rex::getAccesskey(rex_i18n::msg('article_add'), 'save') . '>' . rex_i18n::msg('article_add') . '</button></td>
-                </tr>
-                            ';
-    }
-
     // --------------------- ARTIKEL LIST
 
     for ($i = 0; $i < $sql->getRows(); ++$i) {
@@ -372,7 +336,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
         }
 
         // These params are passed to the structure fields
-        $article_provider = rex_structure_data_provider::factory();
         $article_provider
             ->setEditId($sql->getValue('id'))
             ->setSql($sql);

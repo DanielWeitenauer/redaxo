@@ -52,6 +52,10 @@ class rex_structure_data_provider
      * @var rex_sql
      */
     protected $sql;
+    /**
+     * @var rex_pager
+     */
+    protected $artpager;
 
     /**
      * @return static
@@ -389,5 +393,18 @@ class rex_structure_data_provider
             'artstart' => $this->getArtStart(),
             'catstart' => $this->getCatStart(),
         ];
+    }
+
+    /**
+     * @return rex_pager
+     */
+    public function getArtPager()
+    {
+        if (!isset($this->artpager)) {
+            $this->artpager = new rex_pager(30, 'artstart');
+            $this->artpager->setRowCount($this->getSql()->getValue('artCount'));
+        }
+
+        return $this->artpager;
     }
 }
