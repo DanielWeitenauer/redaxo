@@ -36,7 +36,7 @@ class rex_structure_field_article_status extends rex_structure_field
         ];
 
         // Active state
-        if (!$sql->getValue('startarticle') == 1 && $category_permission && $user->hasPerm('publishArticle[]')) {
+        if ($sql->getValue('startarticle') != 1 && $category_permission && $user->hasPerm('publishArticle[]')) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
                 'article_id' => $edit_id,
