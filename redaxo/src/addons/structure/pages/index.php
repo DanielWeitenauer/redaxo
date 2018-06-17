@@ -180,17 +180,15 @@ if ($KAT->getRows() > 0) {
         $kat_link = $context->getUrl(['category_id' => $i_category_id]);
         $kat_icon_td = '<td class="rex-table-icon"><a href="' . $kat_link . '" title="' . htmlspecialchars($KAT->getValue('catname')) . '"><i class="rex-icon rex-icon-category"></i></a></td>';
 
-        $kat_status = $catStatusTypes[$KAT->getValue('status')][0];
-        $status_class = $catStatusTypes[$KAT->getValue('status')][1];
-        $status_icon = $catStatusTypes[$KAT->getValue('status')][2];
+        // These params are passed to the structure fields
+        $category_provider = rex_structure_data_provider::factory();
+        $category_provider
+            ->setEditId($i_category_id)
+            ->setSql($KAT);
+
+        $kat_status = rex_structure_field_category_status::factory($category_provider)->getField();
 
         if ($KATPERM) {
-            if ($KATPERM && rex::getUser()->hasPerm('publishCategory[]')) {
-                $kat_status = '<a class="' . $status_class . '" href="' . $context->getUrl(['category-id' => $i_category_id, 'catstart' => $catstart] + rex_api_category_status::getUrlParams()) . '"><i class="rex-icon ' . $status_icon . '"></i> ' . $kat_status . '</a>';
-            } else {
-                $kat_status = '<span class="' . $status_class . ' text-muted"><i class="rex-icon ' . $status_icon . '"></i> ' . $kat_status . '</span>';
-            }
-
             if (isset($edit_id) && $edit_id == $i_category_id && $function == 'edit_cat') {
                 // --------------------- KATEGORIE EDIT FORM
 
@@ -241,7 +239,7 @@ if ($KAT->getRows() > 0) {
                         <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                         <td class="rex-table-action"><a href="' . $context->getUrl(['edit_id' => $i_category_id, 'function' => 'edit_cat', 'catstart' => $catstart]) . '"><i class="rex-icon rex-icon-edit"></i> ' . rex_i18n::msg('change') . '</a></td>
                         <td class="rex-table-action">' . $category_delete . '</td>
-                        <td class="rex-table-action">' . $kat_status . '</td>
+                        <td class="rex-table-action">'.$kat_status.'</td>
                     </tr>';
             }
         } elseif (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($i_category_id)) {
@@ -255,7 +253,7 @@ if ($KAT->getRows() > 0) {
                         <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">' . htmlspecialchars($KAT->getValue('catpriority')) . '</td>
                         <td class="rex-table-action"><span class="text-muted"><i class="rex-icon rex-icon-edit"></i> ' . rex_i18n::msg('change') . '</span></td>
                         <td class="rex-table-action"><span class="text-muted"><i class="rex-icon rex-icon-delete"></i> ' . rex_i18n::msg('delete') . '</span></td>
-                        <td class="rex-table-action"><span class="' . $status_class . ' text-muted"><i class="rex-icon ' . $status_icon . '"></i> ' . $kat_status . '</span></td>
+                        <td class="rex-table-action">'.$kat_status.'</td>
                     </tr>';
         }
 
