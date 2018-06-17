@@ -20,7 +20,7 @@ class rex_structure_field_category_status extends rex_structure_field
         $status_icon = $states[$status_index][2];
 
 
-        $button_params = [
+        $field_params = [
             'hidden_label' => $this->isHiddenLabel(),
             'label' => $status,
             'icon' => 'rex-icon '.$status_icon,
@@ -33,6 +33,7 @@ class rex_structure_field_category_status extends rex_structure_field
             ],
         ];
 
+        // Active state
         if ($user->hasPerm('publishCategory[]') || $user->getComplexPerm('structure')->hasCategoryPerm($edit_id)) {
             $context = $this->getDataProvider()->getContext();
             $url_params = array_merge($this->getDataProvider()->getUrlParams(), [
@@ -40,12 +41,14 @@ class rex_structure_field_category_status extends rex_structure_field
                 'category-id' => $edit_id,
                 rex_api_category_status::getUrlParams(),
             ]);
-            $button_params['url'] = $context->getUrl($url_params, false);
-            $button_params['attributes']['class'][] = 'btn-default';
-        } else {
-            $button_params['attributes']['class'][] = 'text-muted';
+            $field_params['url'] = $context->getUrl($url_params, false);
+            $field_params['attributes']['class'][] = 'btn-default';
+        }
+        // Inactive state
+        else {
+            $field_params['attributes']['class'][] = 'text-muted disabled';
         }
 
-        return $this->getFragment($button_params);
+        return $this->getFragment($field_params);
     }
 }
