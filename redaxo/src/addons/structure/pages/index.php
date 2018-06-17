@@ -203,8 +203,6 @@ echo $fragment->parse('core/page/section.php');
 
 $echo = '';
 
-// --------------------- READ TEMPLATES
-
 if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('structure')->hasMountpoints())) {
     $withTemplates = $this->getPlugin('content')->isAvailable();
     $tmpl_head = '';
