@@ -9,8 +9,6 @@ class rex_structure_field_category_name extends rex_structure_field
      */
     public function getField()
     {
-        $category_id = $this->getDataProvider()->getCategoryId();
-
         $sql = $this->getDataProvider()->getSql();
         $category_active_id = $sql->getValue('id');
 
