@@ -2,21 +2,21 @@
 /**
  * @package redaxo\structure
  */
-class rex_structure_field_article_head extends rex_structure_field
+class rex_structure_field_string extends rex_structure_field
 {
     /**
      * @var string
      */
-    protected $key;
+    protected $string;
 
     /**
-     * @param $key
+     * @param string $string
      *
      * @return $this
      */
-    public function setKey($key)
+    public function setString($string)
     {
-        $this->key = $key;
+        $this->string = $string;
 
         return $this;
     }
@@ -26,16 +26,16 @@ class rex_structure_field_article_head extends rex_structure_field
      */
     public function getField()
     {
-        $key = $this->key;
+        $string = $this->string;
 
-        if (rex_i18n::hasMsg($key)) {
-            $key = rex_i18n::msg($key);
-        } elseif (rex_i18n::hasMsg('header_'.$key)) {
-            $key = rex_i18n::msg('header_'.$key);
+        if (rex_i18n::hasMsg($string)) {
+            $string = rex_i18n::msg($string);
+        } elseif (rex_i18n::hasMsg('header_'.$string)) {
+            $string = rex_i18n::msg('header_'.$string);
         }
 
         $field_params = [
-            'label' => htmlspecialchars($key),
+            'label' => $string,
             'attributes' => [
                 'class' => [
                     'btn',

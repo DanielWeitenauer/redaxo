@@ -90,17 +90,13 @@ class rex_structure_group
 
     /**
      * @param string $key
-     * @param rex_structure_field|array $field_body
+     * @param rex_structure_field|array|null|string $field_body
      * @param rex_structure_field|array|null|string $field_head
      *
      * @return $this
      */
     public function setField($key, $field_body, $field_head = null)
     {
-        if (!isset($field_head)) {
-            $field_head = $key;
-        }
-
         $this->setFieldBody($key, $field_body);
         $this->setFieldHead($key, $field_head);
 
@@ -148,14 +144,18 @@ class rex_structure_group
 
     /**
      * @param string $key
-     * @param rex_structure_field|array|string $field_head
+     * @param rex_structure_field|array|null|string $field_head
      *
      * @return $this
      */
     public function setFieldHead($key, $field_head)
     {
+        if (!isset($field_head)) {
+            $field_head = $key;
+        }
+
         if (is_string($field_head)) {
-            $field_head = rex_structure_field_article_head::factory($this->getDataProvider())->setKey($field_head);
+            $field_head = rex_structure_field_string::factory($this->getDataProvider())->setString($field_head);
         }
 
         $this->group_head[$key] = $field_head;
@@ -165,12 +165,19 @@ class rex_structure_group
 
     /**
      * @param string $key
-     * @param rex_structure_field|array $field_body
+     * @param rex_structure_field|array|null|string $field_body
      *
      * @return $this
      */
     public function setFieldBody($key, $field_body)
     {
+        if (!isset($field_body)) {
+            $field_body = '';
+        }
+        if (is_string($field_body)) {
+            $field_body = rex_structure_field_string::factory($this->getDataProvider())->setString($field_body);
+        }
+
         $this->group_body[$key] = $field_body;
 
         if (!isset($this->group_head[$key])) {
