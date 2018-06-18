@@ -64,28 +64,34 @@ class rex_structure_group
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getGroupHead()
     {
         $fragment = new rex_fragment();
         $fragment->setVar('group', $this->group_head, false);
 
-        return $fragment->parse('structure/group_article_table_head.php');
+        return $fragment->parse('structure/group_head.php');
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getGroupBody()
     {
         $sql = $this->getDataProvider()->getSql();
 
+        $css_class= '';
+        // Result set may be empty
+        if ($sql->getRows() && $sql->getValue('startarticle') == 1) {
+            $css_class = ' rex-startarticle';
+        }
+
         $fragment = new rex_fragment();
-        $fragment->setVar('is_startarticle', $sql->getValue('startarticle') == 1, false);
+        $fragment->setVar('css_class', $css_class, false);
         $fragment->setVar('group', $this->group_body, false);
 
-        return $fragment->parse('structure/group_article_table_body.php');
+        return $fragment->parse('structure/group_body.php');
     }
 
     /**
@@ -123,7 +129,7 @@ class rex_structure_group
      */
     public function hasField($key)
     {
-        return isset($this->group_body[$key]);
+        return isset($this->group_body[$key]) || isset($this->group_head[$key]);
     }
 
     /**

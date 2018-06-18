@@ -1,4 +1,4 @@
-<tr class="rex-structure rex-structure-article<?=$this->is_startarticle ? ' rex-startarticle' : '';?>">
+<tr class="rex-structure<?=$this->css_class;?>">
     <?php foreach ($this->group as $field_key => $field): ?>
         <td class="rex-table-<?=rex_string::normalize($field_key, '-');?>"<?=rex_i18n::hasMsg('header_'.$field_key) ? ' data-title="'.rex_i18n::msg('header_'.$field_key).'"' : '';?>>
             <?php if ($field instanceof rex_structure_field): ?>
