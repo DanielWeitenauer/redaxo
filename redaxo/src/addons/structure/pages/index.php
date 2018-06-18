@@ -263,11 +263,6 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
     // --------------------- ARTIKEL LIST
     $echo_body = '';
     for ($i = 0; $i < $sql->getRows(); ++$i) {
-        $class_startarticle = '';
-        if ($sql->getValue('startarticle') == 1) {
-            $class_startarticle = ' rex-startarticle';
-        }
-
         // These params are passed to the structure fields
         $article_provider
             ->setEditId($sql->getValue('id'))
