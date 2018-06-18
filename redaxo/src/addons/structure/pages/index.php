@@ -87,8 +87,6 @@ $catFragment->setVar('urlprovider', $context);
 $catFragment->setVar('pager', $catPager);
 echo $catFragment->parse('core/navigations/pagination.php');
 
-$add_category = rex_structure_field_category_add::factory($category_provider)->setHiddenLabel(true)->getField();
-
 // --------------------- GET THE DATA
 
 if (count($mountpoints) > 0 && $category_id == 0) {
@@ -114,57 +112,52 @@ if ($function == 'add_cat' || $function == 'edit_cat') {
 
 // --------------------- PRINT CATS/SUBCATS
 $echo .= '
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th class="rex-table-icon">'.$add_category.'</th>
-                        <th class="rex-table-id">' . rex_i18n::msg('header_id') . '</th>
-                        <th>' . rex_i18n::msg('header_category') . '</th>
-                        <th class="rex-table-priority">' . rex_i18n::msg('header_priority') . '</th>
-                        <th class="rex-table-action" colspan="3">' . rex_i18n::msg('header_status') . '</th>
-                    </tr>
-                </thead>
-                <tbody>';
-if ($category_id != 0 && ($category = rex_category::get($category_id))) {
-    $echo .= '  <tr>
-                    <td class="rex-table-icon"><i class="rex-icon rex-icon-open-category"></i></td>
-                    <td class="rex-table-id">-</td>
-                    <td data-title="' . rex_i18n::msg('header_category') . '"><a href="' . $context->getUrl(['category_id' => $category->getParentId()]) . '">..</a></td>
-                    <td class="rex-table-priority" data-title="' . rex_i18n::msg('header_priority') . '">&nbsp;</td>
-                    <td class="rex-table-action" colspan="3">&nbsp;</td>
-                </tr>';
+            <table class="table table-striped table-hover">';
+
+$echo_body = '<tbody>';
+
+// These params are passed to the structure fields
+$category_provider->setSql($KAT);
+
+$category_add = rex_structure_field_category_add::factory($category_provider)->setHiddenLabel(true);
+
+if ($category_id != 0 && rex_category::get($category_id) instanceof rex_category) {
+    $category_group = rex_structure_group::factory($category_provider);
+    $category_group
+        ->setField('icon', '<i class="rex-icon rex-icon-open-category"></i>', $category_add)
+        ->setField('id', '-')
+        ->setField('category', '<a href="'.$context->getUrl(['category_id' => $category->getParentId()]).'">..</a>')
+        ->setField('priority', '')
+        ->setField('action', '', 'header_status')
+    ;
+
+    $echo_body .= $category_group->getGroupBody();
 }
 
 // --------------------- KATEGORIE LIST
 if ($KAT->getRows() > 0) {
     for ($i = 0; $i < $KAT->getRows(); ++$i) {
-        // These params are passed to the structure fields
-        $category_provider = rex_structure_data_provider::factory();
         $category_provider->setSql($KAT);
 
-        $kat_status = rex_structure_field_category_status::factory($category_provider)->getField();
-        $category_delete = rex_structure_field_category_delete::factory($category_provider)->getField();
-        $category_edit = rex_structure_field_category_edit::factory($category_provider)->getField();
-        $category_name = rex_structure_field_category_name::factory($category_provider)->getField();
-        $category_icon = rex_structure_field_category_icon::factory($category_provider)->getField();
-        $category_id_field = rex_structure_field_category_id::factory($category_provider)->getField();
-        $category_priority = rex_structure_field_category_priority::factory($category_provider)->getField();
+        $category_group = rex_structure_group::factory($category_provider);
+        $category_group
+            ->setField('icon', rex_structure_field_category_icon::factory($category_provider), $category_add)
+            ->setField('id', rex_structure_field_category_id::factory($category_provider))
+            ->setField('category', rex_structure_field_category_name::factory($category_provider))
+            ->setField('priority', rex_structure_field_category_priority::factory($category_provider))
+            ->setField('action', [
+                rex_structure_field_category_status::factory($category_provider),
+                rex_structure_field_category_delete::factory($category_provider),
+                rex_structure_field_category_edit::factory($category_provider),
+            ], 'header_status')
+        ;
 
-        $echo .= '
-            <tr>
-                <td class="rex-table-icon">'.$category_icon.'</td>
-                <td class="rex-table-id" data-title="' . rex_i18n::msg('header_id') . '">'.$category_id_field.'</td>
-                <td data-title="'.rex_i18n::msg('header_category').'">'.$category_name.'</td>
-                <td class="rex-table-priority" data-title="'.rex_i18n::msg('header_priority').'">'.$category_priority.'</td>
-                <td class="rex-table-action">'.$category_edit.'</td>
-                <td class="rex-table-action">'.$category_delete.'</td>
-                <td class="rex-table-action">'.$kat_status.'</td>
-            </tr>';
+        $echo_body .= $category_group->getGroupBody();
 
         $KAT->next();
     }
 } else {
-    $echo .= '
+    $echo_body .= '
                 <tr>
                     <td>&nbsp;</td>
                     <td></td>
@@ -176,6 +169,7 @@ if ($KAT->getRows() > 0) {
                 </tr>';
 }
 
+$echo .= $category_group->getGroupHead().$echo_body;
 $echo .= '
             </tbody>
         </table>';
