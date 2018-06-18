@@ -254,14 +254,14 @@ if ($category_id > 0 || ($category_id == 0 && !rex::getUser()->getComplexPerm('s
             <table class="table table-striped table-hover">
                 ';
 
+    $echo_body = '';
     // tbody nur anzeigen, wenn später auch inhalt drinnen stehen wird
     if ($sql->getRows() > 0 || $function == 'add_art') {
-        $echo .= '<tbody>
+        $echo_body .= '<tbody>
                     ';
     }
 
     // --------------------- ARTIKEL LIST
-    $echo_body = '';
     for ($i = 0; $i < $sql->getRows(); ++$i) {
         // These params are passed to the structure fields
         $article_provider
