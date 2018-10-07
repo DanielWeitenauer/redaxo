@@ -6,31 +6,54 @@
 
 $structure_data = rex_structure_data::getInstance();
 
-// basic request vars
-$category_id = $structure_data->getCategoryId();
-$article_id = $structure_data->getArticleId();
-$clang = $structure_data->getClangId();
-
 // --------------------- Extension Point
-echo rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_HEADER_PRE', '', [
+$structure_header_pre = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_HEADER_PRE', '', [
     'context' => $structure_data->getContext(),
 ]));
 
 // --------------------------------------------- TITLE
-echo rex_view::title(rex_i18n::msg('title_structure'));
+$structure_title = rex_view::title(rex_i18n::msg('title_structure'));
 
 // --------------------------------------------- Languages
-echo rex_view::clangSwitchAsButtons($structure_data->getContext());
+$structure_language = rex_view::clangSwitchAsButtons($structure_data->getContext());
 
 // --------------------------------------------- Path
-require __DIR__ . '/../functions/function_rex_category.php';
+$navigation = [];
+
+$object_id = $structure_data->getArticleId() > 0 ? $structure_data->getArticleId() : $structure_data->getCategoryId();
+$object = rex_article::get($object_id, $structure_data->getClangId());
+if ($object) {
+    $tree = $object->getParentTree();
+    if (!$object->isStartarticle()) {
+        $tree[] = $object;
+    }
+    foreach ($tree as $parent) {
+        $id = $parent->getId();
+        if (rex::getUser()->getComplexPerm('structure')->hasCategoryPerm($id)) {
+            $n = [];
+            $n['title'] = str_replace(' ', '&nbsp;', rex_escape($parent->getName()));
+            if ($parent->isStartarticle()) {
+                $n['href'] = rex_url::backendPage('structure', ['category_id' => $id, 'clang' => $structure_data->getClangId()]);
+            }
+            $navigation[] = $n;
+        }
+    }
+}
+
+$title = '<a href="'.rex_url::backendPage('structure', ['category_id' => 0, 'clang' => $structure_data->getClangId()]).'"><i class="rex-icon rex-icon-structure-root-level"></i> '.rex_i18n::msg('root_level').'</a>';
+
+$fragment = new rex_fragment();
+$fragment->setVar('id', 'rex-js-structure-breadcrumb', false);
+$fragment->setVar('title', $title, false);
+$fragment->setVar('items', $navigation, false);
+$structure_breadcrumb = $fragment->parse('core/navigations/breadcrumb.php');
 
 // -------------- STATUS_TYPE Map
 $catStatusTypes = rex_category_service::statusTypes();
 $artStatusTypes = rex_article_service::statusTypes();
 
 // --------------------------------------------- API MESSAGES
-echo rex_api_function::getMessage();
+$structure_message = rex_api_function::getMessage();
 
 // --------------------------------------------- KATEGORIE LISTE
 $cat_name = rex_i18n::msg('root_level');
@@ -42,7 +65,7 @@ if ($category) {
 $data_colspan = 5;
 
 // --------------------- Extension Point
-echo rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_HEADER', '', [
+$structure_header = rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_HEADER', '', [
     'category_id' => $structure_data->getCategoryId(),
     'clang' => $structure_data->getClangId(),
 ]));
@@ -50,6 +73,15 @@ echo rex_extension::registerPoint(new rex_extension_point('PAGE_STRUCTURE_HEADER
 // --------------------- SEARCH BAR
 //require_once $this->getPath('functions/function_rex_searchbar.php');
 //echo rex_structure_searchbar($structure_data->getContext());
+
+$fragment = new rex_fragment();
+$fragment->setVar('structure_header_pre', $structure_header_pre, false);
+$fragment->setVar('structure_title', $structure_title, false);
+$fragment->setVar('structure_language', $structure_language, false);
+$fragment->setVar('structure_breadcrumb', $structure_breadcrumb, false);
+$fragment->setVar('structure_message', $structure_message, false);
+$fragment->setVar('structure_header', $structure_header, false);
+echo $fragment->parse('structure/structure_header.php');
 
 // --------------------- COUNT CATEGORY ROWS
 
